@@ -1,43 +1,23 @@
-class QuestionsController < ApplicationController
-  include AuthorizationHelper
-  skip_before_action :verify_authenticity_token
-  # A question is a single entry within a questionnaire
-  # Questions provide a way of scoring an object
-  # based on either a numeric value or a true/false
-  # state.
-
-  def action_allowed?
-    current_user_has_ta_privileges?
-  end
-
-  # Get list of all the questions
+class Api::V1::QuestionsController < ApplicationController
   # GET on /questions
   def index
-    begin
-      @questions = Question.paginate(page: params[:page], per_page: 10)
-      render json: @questions
-    rescue StandardError
-      msg = $ERROR_INFO
-      render json: msg, status: :not_found
-    end
+    @questions = Question.paginate(page: params[:page], per_page: 10)
+    render json: @questions, status: :ok
   end
 
-  #Show a given question
   # GET on /questions/:id
   def show
     begin
       @question = Question.find(params[:id])
-      render json: @question
+      render json: @question, status: :ok
     rescue
       msg = "No such Question exists."
       render json: msg, status: :not_found
     end
   end
 
-  # Create a new question
   # POST on /questions
   def create
-
     questionnaire_id = params[:id] unless params[:id].nil?
     # If the questionnaire is being used in the active period of an assignment, delete existing responses before adding new questions
     if AnswerHelper.check_and_delete_responses(questionnaire_id)
@@ -58,59 +38,54 @@ class QuestionsController < ApplicationController
     question.size = '60, 5' if question.is_a? TextArea
     question.size = '30' if question.is_a? TextField
     begin
-    
       question.save
       render json: question, status: :created
-
     rescue StandardError
-      render json: $ERROR_INFO, status: :not_found
+      render json: $ERROR_INFO, status: :unprocessable_entity
     end
   end
 
-  # Remove question
   # DELETE on /questions/:id
   def destroy
-    question = Question.find(params[:id])
+    begin
+      question = Question.find(params[:id])
+    rescue
+      render json: $ERROR_INFO, status: :not_found
+    end
     questionnaire_id = question.questionnaire_id
-
     if AnswerHelper.check_and_delete_responses(questionnaire_id)
       msg = 'You have successfully deleted the question. Any existing reviews for the questionnaire have been deleted!'
     else
       msg = 'You have successfully deleted the question!'
     end
-    
     begin
       question.destroy
-      render json: msg
+      render json: msg, status: :ok
     rescue StandardError
-      render json: $ERROR_INFO, status: :not_found
+      render json: $ERROR_INFO, status: :unprocessable_entity
     end
   end
 
-  # save the update to an existing question
   # PUT on /questions/:id
   def update
     @question = Question.find(params[:id])
     begin
-      if @question.update(question_params)
-        render json: 'The question was successfully updated.'
-      else
-        render json: @question.errors.full_messages
-      end
+      @question.update(question_params)
+      render json: 'The question was successfully updated.', status: :ok
     rescue StandardError
-      render json: $ERROR_INFO
+      render json: $ERROR_INFO, status: :unprocessable_entity
     end
   end
 
-  # required for answer tagging
   # GET on /questions/types
   def types
     types = Question.distinct.pluck(:type)
-    render json: types.to_a
+    render json: types.to_a, status: :ok
   end
 
   private
-
+  
+  # Only allow a list of trusted parameters through.
   def question_params
     params.permit(:txt, :weight, :questionnaire_id, :seq, :type, :size,
                                      :alternatives, :break_before, :max_label, :min_label)
