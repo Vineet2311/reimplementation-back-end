@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         collection do
           #put 'update/:id', to: 'questions#update', as: 'update'
           get :types
+          delete 'delete_all/:id', to:'questions#delete_all', as: 'delete_all'
         end
       end
     end

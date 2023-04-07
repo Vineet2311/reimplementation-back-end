@@ -18,19 +18,20 @@ class Api::V1::QuestionnairesController < ApplicationController
   end
   
   # POST on /questionnaires
+  # Instructor Id statically defined since implementation of Instructor model is out of scope of E2345.
   def create
     if params[:questionnaire][:name].blank?
       render json: "Questionnaire name cannot be blank.", status: :unprocessable_entity
     end
     begin
       display_type = params[:questionnaire][:type].split('Questionnaire')[0]
-      @questionnaire = Object.const_get(params[:questionnaire][:type]).new if Questionnaire::QUESTIONNAIRE_TYPES.include? params[:questionnaire][:type]
+      @questionnaire = Questionnaire.new if Questionnaire::QUESTIONNAIRE_TYPES.include? params[:questionnaire][:type]
       @questionnaire.private = params[:questionnaire][:private] == 'true'
-      @questionnaire.name = params[:questionnaire][:name]
+      @questionnaire.name = params[:questionnaire][:name] 
       @questionnaire.instructor_id = 6 # session[:user].id
       @questionnaire.min_question_score = params[:questionnaire][:min_question_score]
       @questionnaire.max_question_score = params[:questionnaire][:max_question_score]
-      @questionnaire.type = params[:questionnaire][:type]
+      @questionnaire.questionnaire_type = params[:questionnaire][:type]
       if %w[AuthorFeedback CourseSurvey TeammateReview GlobalSurvey AssignmentSurvey BookmarkRating].include?(display_type)
         display_type = (display_type.split(/(?=[A-Z])/)).join('%')
       end
@@ -54,15 +55,18 @@ class Api::V1::QuestionnairesController < ApplicationController
     begin
       name = @questionnaire.name
       questions = @questionnaire.questions
-      questions.each do |question|
-        advices = question.question_advices
-        advices.each(&:delete)
-        question.delete
+      # questions.each do |question|
+      #   question.delete
+      # end
+      unless questions.nil?
+        msg = "This questionnaire has questions associated with it. Use this endpoint to delete all questions for the questionnaire: "
+        link = "/questions/delete_all/" + @questionnaire.id.to_s
+        msg += link
+        render json: msg
+      else
+        @questionnaire.delete
+        render json: "The questionnaire \"#{name}\" has been successfully deleted.", status: :ok
       end
-      questionnaire_node = @questionnaire.questionnaire_node
-      questionnaire_node.delete if !questionnaire_node.nil?
-      @questionnaire.delete
-      render json: "The questionnaire \"#{name}\" has been successfully deleted.", status: :ok
     rescue StandardError => e
       render json: e.message, status: :unprocessable_entity
     end
@@ -73,19 +77,19 @@ class Api::V1::QuestionnairesController < ApplicationController
     begin
       # Save questionnaire information
       @questionnaire = Questionnaire.find(params[:id])
-      @questionnaire.update_attributes(questionnaire_params)
+      @questionnaire.update(questionnaire_params)
       # Save all questions
-      unless params[:question].nil?
-        params[:question].each_pair do |k, v|
-          @question = Question.find(k)
-          # example of 'v' value
-          # {"seq"=>"1.0", "txt"=>"WOW", "weight"=>"1", "size"=>"50,3", "max_label"=>"Strong agree", "min_label"=>"Not agree"}
-          v.each_pair do |key, value|
-            @question.send(key + '=', value) unless @question.send(key) == value
-          end
-          @question.save
-        end
-      end
+      # unless params[:question].nil?
+      #   params[:question].each_pair do |k, v|
+      #     @question = Question.find(k)
+      #     # example of 'v' value
+      #     # {"seq"=>"1.0", "txt"=>"WOW", "weight"=>"1", "size"=>"50,3", "max_label"=>"Strong agree", "min_label"=>"Not agree"}
+      #     v.each_pair do |key, value|
+      #       @question.send(key + '=', value) unless @question.send(key) == value
+      #     end
+      #     @question.save
+      #   end
+      # end
       render json: 'The questionnaire has been successfully updated!', status: :ok
     rescue StandardError
       render json: $ERROR_INFO, status: :unprocessable_entity
@@ -112,6 +116,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       render json: "The questionnaire \"#{@questionnaire.name}\" has been successfully made #{@access}. ", status: :ok
     rescue StandardError
       render json: $ERROR_INFO, status: :unprocessable_entity
+    end
   end
 
   private

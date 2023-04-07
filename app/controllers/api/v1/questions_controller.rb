@@ -1,7 +1,7 @@
 class Api::V1::QuestionsController < ApplicationController
   # GET on /questions
   def index
-    @questions = Question.paginate(page: params[:page], per_page: 10)
+    @questions = Question.order(:id)
     render json: @questions, status: :ok
   end
 
@@ -19,24 +19,33 @@ class Api::V1::QuestionsController < ApplicationController
   # POST on /questions
   def create
     questionnaire_id = params[:id] unless params[:id].nil?
-    # If the questionnaire is being used in the active period of an assignment, delete existing responses before adding new questions
-    if AnswerHelper.check_and_delete_responses(questionnaire_id)
-      msg = 'You have successfully added a new question. Any existing reviews for the questionnaire have been deleted!'
-    else
-      msg = 'You have successfully added a new question.'
-    end
     num_of_existed_questions = Questionnaire.find(questionnaire_id).questions.size
-    question = Object.const_get(params[:question][:type]).create(txt: '', questionnaire_id: questionnaire_id, seq: num_of_existed_questions + 1, type: params[:question][:type], break_before: true)
-    if question.is_a? ScoredQuestion
+    question = Question.create(
+      txt: params[:question][:txt],
+      questionnaire_id: questionnaire_id,
+      seq: num_of_existed_questions + 1,
+      question_type: params[:question][:type],
+      break_before: true)
+    # question = Object.const_get(params[:question][:type]).create(txt: '', questionnaire_id: questionnaire_id, seq: num_of_existed_questions + 1, question_type: params[:question][:type], break_before: true)
+    case question.question_type
+    when 'Scale'
       question.weight = params[:question][:weight]
       question.max_label = 'Strongly agree'
       question.min_label = 'Strongly disagree'
+    when 'Cake', 'Criterion'
+      question.weight = params[:question][:weight]
+      question.max_label = 'Strongly agree'
+      question.min_label = 'Strongly disagree'
+      question.size = '50, 3'
+    when 'Dropdown'
+      question.alternatives = '0|1|2|3|4|5'
+      question.size = nil
+    when 'TextArea'
+      question.size = '60, 5'
+    when 'TextField'
+      question.size = '30'
     end
-    question.size = '50, 3' if question.is_a? Criterion
-    question.size = '50, 3' if question.is_a? Cake
-    question.alternatives = '0|1|2|3|4|5' if question.is_a? Dropdown
-    question.size = '60, 5' if question.is_a? TextArea
-    question.size = '30' if question.is_a? TextField
+    
     begin
       question.save
       render json: question, status: :created
@@ -50,18 +59,25 @@ class Api::V1::QuestionsController < ApplicationController
     begin
       question = Question.find(params[:id])
     rescue
-      render json: $ERROR_INFO, status: :not_found
-    end
-    questionnaire_id = question.questionnaire_id
-    if AnswerHelper.check_and_delete_responses(questionnaire_id)
-      msg = 'You have successfully deleted the question. Any existing reviews for the questionnaire have been deleted!'
-    else
-      msg = 'You have successfully deleted the question!'
+      render json: $ERROR_INFO, status: :not_found and return
     end
     begin
       question.destroy
-      render json: msg, status: :ok
+      render json: 'You have successfully deleted the question!', status: :ok and return
     rescue StandardError
+      render json: $ERROR_INFO, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE on /questions/delete_all/<questionnaire_id>
+  # Endpoint to delete all questions associated to a particular questionnaire.
+  def delete_all
+    begin
+      @questionnaire = Questionnaire.find(params[:id])
+      @questionnaire.questions.destroy_all
+      msg = "All questions for Questionnaire ID:" + params[:id].to_s + " has been successfully deleted!"
+      render json: msg, status: :ok
+    rescue
       render json: $ERROR_INFO, status: :unprocessable_entity
     end
   end
@@ -79,7 +95,7 @@ class Api::V1::QuestionsController < ApplicationController
 
   # GET on /questions/types
   def types
-    types = Question.distinct.pluck(:type)
+    types = Question.distinct.pluck(:question_type)
     render json: types.to_a, status: :ok
   end
 
