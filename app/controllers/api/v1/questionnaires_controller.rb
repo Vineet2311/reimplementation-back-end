@@ -3,45 +3,45 @@ class Api::V1::QuestionnairesController < ApplicationController
   # GET on /questionnaires
   def index
     @questionnaires = Questionnaire.order(:id)
-    render json: @questionnaires, status: :ok
+    render json: @questionnaires, status: :ok and return
   end
   
   # GET on /questionnaires/:id
   def show
     begin
       @questionnaire = Questionnaire.find(params[:id])
-      render json: @questionnaire, status: :ok
+      render json: @questionnaire, status: :ok and return
     rescue
       msg = "No such Questionnaire exists."
-      render json: msg, status: :not_found
+      render json: msg, status: :not_found and return
     end
   end
   
   # POST on /questionnaires
   # Instructor Id statically defined since implementation of Instructor model is out of scope of E2345.
   def create
-    if params[:questionnaire][:name].blank?
-      render json: "Questionnaire name cannot be blank.", status: :unprocessable_entity
+    if params[:name].blank?
+      render json: "Questionnaire name cannot be blank.", status: :unprocessable_entity and return
     end
     begin
-      display_type = params[:questionnaire][:type].split('Questionnaire')[0]
-      @questionnaire = Questionnaire.new if Questionnaire::QUESTIONNAIRE_TYPES.include? params[:questionnaire][:type]
-      @questionnaire.private = params[:questionnaire][:private] == 'true'
-      @questionnaire.name = params[:questionnaire][:name] 
+      display_type = params[:type].split('Questionnaire')[0]
+      @questionnaire = Questionnaire.new if Questionnaire::QUESTIONNAIRE_TYPES.include? params[:type]
+      @questionnaire.private = params[:private] == 'true'
+      @questionnaire.name = params[:name] 
       @questionnaire.instructor_id = 6 # session[:user].id
-      @questionnaire.min_question_score = params[:questionnaire][:min_question_score]
-      @questionnaire.max_question_score = params[:questionnaire][:max_question_score]
-      @questionnaire.questionnaire_type = params[:questionnaire][:type]
+      @questionnaire.min_question_score = params[:min_question_score]
+      @questionnaire.max_question_score = params[:max_question_score]
+      @questionnaire.questionnaire_type = params[:type]
       if %w[AuthorFeedback CourseSurvey TeammateReview GlobalSurvey AssignmentSurvey BookmarkRating].include?(display_type)
         display_type = (display_type.split(/(?=[A-Z])/)).join('%')
       end
       @questionnaire.display_type = display_type
       @questionnaire.instruction_loc = Questionnaire::DEFAULT_QUESTIONNAIRE_URL
       @questionnaire.save
-      render json: @questionnaire, status: :created
+      render json: @questionnaire, status: :created and return
     rescue StandardError
       msg = $ERROR_INFO
-      render json: msg, status: :unprocessable_entity
+      render json: msg, status: :unprocessable_entity and return
     end
   end
 
@@ -50,7 +50,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     begin
       @questionnaire = Questionnaire.find(params[:id])
     rescue
-      render json: $ERROR_INFO, status: :not_found
+      render json: $ERROR_INFO, status: :not_found and return
     end
     begin
       name = @questionnaire.name
@@ -62,13 +62,13 @@ class Api::V1::QuestionnairesController < ApplicationController
         msg = "This questionnaire has questions associated with it. Use this endpoint to delete all questions for the questionnaire: "
         link = "/questions/delete_all/" + @questionnaire.id.to_s
         msg += link
-        render json: msg
+        render json: msg and return
       else
         @questionnaire.delete
-        render json: "The questionnaire \"#{name}\" has been successfully deleted.", status: :ok
+        render json: "The questionnaire \"#{name}\" has been successfully deleted.", status: :ok and return
       end
     rescue StandardError => e
-      render json: e.message, status: :unprocessable_entity
+      render json: e.message, status: :unprocessable_entity and return
     end
   end
 
@@ -78,21 +78,9 @@ class Api::V1::QuestionnairesController < ApplicationController
       # Save questionnaire information
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.update(questionnaire_params)
-      # Save all questions
-      # unless params[:question].nil?
-      #   params[:question].each_pair do |k, v|
-      #     @question = Question.find(k)
-      #     # example of 'v' value
-      #     # {"seq"=>"1.0", "txt"=>"WOW", "weight"=>"1", "size"=>"50,3", "max_label"=>"Strong agree", "min_label"=>"Not agree"}
-      #     v.each_pair do |key, value|
-      #       @question.send(key + '=', value) unless @question.send(key) == value
-      #     end
-      #     @question.save
-      #   end
-      # end
-      render json: 'The questionnaire has been successfully updated!', status: :ok
+      render json: 'The questionnaire has been successfully updated!', status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO, status: :unprocessable_entity and return
     end
   end
 
@@ -101,9 +89,9 @@ class Api::V1::QuestionnairesController < ApplicationController
     # instructor_id = session[:user].instructor_id
     instructor_id = 6
     @questionnaire = Questionnaire.copy_questionnaire_details(params, instructor_id)
-    render json: "Copy of questionnaire #{@questionnaire.name} has been created successfully.", status: :ok
+    render json: "Copy of questionnaire #{@questionnaire.name} has been created successfully.", status: :ok and return
   rescue StandardError
-    render json: 'The questionnaire was not able to be copied. Please check the original course for missing information.' + $ERROR_INFO.to_s, status: :unprocessable_entity
+    render json: 'The questionnaire was not able to be copied. Please check the original course for missing information.' + $ERROR_INFO.to_s, status: :unprocessable_entity and return
   end
 
   # GET on /questionnaires/toggle_access/:id
@@ -113,9 +101,9 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire.private = !@questionnaire.private
       @questionnaire.save
       @access = @questionnaire.private == true ? 'private' : 'public'
-      render json: "The questionnaire \"#{@questionnaire.name}\" has been successfully made #{@access}. ", status: :ok
+      render json: "The questionnaire \"#{@questionnaire.name}\" has been successfully made #{@access}. ", status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO, status: :unprocessable_entity and return
     end
   end
 

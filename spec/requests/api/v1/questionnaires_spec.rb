@@ -2,7 +2,7 @@ require 'swagger_helper'
 
 RSpec.describe 'Questionnaire API', type: :request do
 
-  path '/api/v1/questionnaire' do
+  path '/api/v1/questionnaires' do
     get('list questionnaires') do
       tags 'Questionnaires'
       produces 'application/json'
@@ -21,7 +21,7 @@ RSpec.describe 'Questionnaire API', type: :request do
 
       response(422, 'invalid request') do
         let(:questionnaire) { { name: '', min_question_score: 1, max_question_score: 5,type: "" } }
-        
+
         after do |example|
           example.metadata[:response][:content] = {
             'application/json' => {
@@ -98,7 +98,7 @@ RSpec.describe 'Questionnaire API', type: :request do
           instruction_loc: { type: :string },
           created_at: { type: :string, format: :date_time },
           updated_at: { type: :string, format: :date_time }
-        }
+        },
         required: [ 'name', 'type', 'min_question_score', 'max_question_score' ]
       }
   
@@ -130,58 +130,56 @@ RSpec.describe 'Questionnaire API', type: :request do
         run_test!
       end
     end
-
-
    
-    patch('update questionnaire') do
-      tags 'Questionnaires'
-      consumes 'application/json'
-      parameter name: :questionnaire, in: :body, schema: {
-        type: :object,
-        properties: {
-          id: { type: :integer },
-          name: { type: :string },
-          private: { type: :boolean },
-          instructor_id: { type: :integer },
-          min_question_score: { type: :integer },
-          max_question_score: { type: :integer },
-          type: { type: :string },
-          display_type: { type: :string },
-          instruction_loc: { type: :string },
-          created_at: { type: :string, format: :date_time },
-          updated_at: { type: :string, format: :date_time }
-        }
-        required: [ 'name', 'type', 'min_question_score', 'max_question_score' ]
-      }
+    # patch('update questionnaire') do
+    #   tags 'Questionnaires'
+    #   consumes 'application/json'
+    #   parameter name: :questionnaire, in: :body, schema: {
+    #     type: :object,
+    #     properties: {
+    #       id: { type: :integer },
+    #       name: { type: :string },
+    #       private: { type: :boolean },
+    #       instructor_id: { type: :integer },
+    #       min_question_score: { type: :integer },
+    #       max_question_score: { type: :integer },
+    #       type: { type: :string },
+    #       display_type: { type: :string },
+    #       instruction_loc: { type: :string },
+    #       created_at: { type: :string, format: :date_time },
+    #       updated_at: { type: :string, format: :date_time }
+    #     },
+    #     required: [ 'name', 'type', 'min_question_score', 'max_question_score' ]
+    #   }
   
-      response(200, 'successful') do
-        let(:id) { Questionnaire.create({ name: 'Questionnaire150', type: 'AuthorFeedbackQuestionnaire', min_question_score: 1, max_question_score: 5 } ).id }
-        let(:questionnaire) { { name: 'Questionnaire100', type: 'AuthorFeedbackQuestionnaire',min_question_score: 1, max_question_score: 5 } }
+    #   response(200, 'successful') do
+    #     let(:id) { Questionnaire.create({ name: 'Questionnaire150', type: 'AuthorFeedbackQuestionnaire', min_question_score: 1, max_question_score: 5 } ).id }
+    #     let(:questionnaire) { { name: 'Questionnaire100', type: 'AuthorFeedbackQuestionnaire',min_question_score: 1, max_question_score: 5 } }
   
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
-      end
+    #     after do |example|
+    #       example.metadata[:response][:content] = {
+    #         'application/json' => {
+    #           example: JSON.parse(response.body, symbolize_names: true)
+    #         }
+    #       }
+    #     end
+    #     run_test!
+    #   end
   
-      response(422, 'invalid request') do
-        let(:id) { Questionnaire.create({ name: 'Questionnaire150', type: 'AuthorFeedbackQuestionnaire', min_question_score: 1, max_question_score: 5 } ).id }
-        let(:questionnaire) { { name: '', type: 'AuthorFeedbackQuestionnaire', min_question_score: 1, max_question_score: 5 } }
+    #   response(422, 'invalid request') do
+    #     let(:id) { Questionnaire.create({ name: 'Questionnaire150', type: 'AuthorFeedbackQuestionnaire', min_question_score: 1, max_question_score: 5 } ).id }
+    #     let(:questionnaire) { { name: '', type: 'AuthorFeedbackQuestionnaire', min_question_score: 1, max_question_score: 5 } }
     
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
-      end
-    end
+    #     after do |example|
+    #       example.metadata[:response][:content] = {
+    #         'application/json' => {
+    #           example: JSON.parse(response.body, symbolize_names: true)
+    #         }
+    #       }
+    #     end
+    #     run_test!
+    #   end
+    # end
     
     put('update questionnaire') do
       tags 'Questionnaires'
@@ -200,7 +198,7 @@ RSpec.describe 'Questionnaire API', type: :request do
           instruction_loc: { type: :string },
           created_at: { type: :string, format: :date_time },
           updated_at: { type: :string, format: :date_time }
-        }
+        },
         required: [ 'name', 'type', 'min_question_score', 'max_question_score' ]
       }
     
