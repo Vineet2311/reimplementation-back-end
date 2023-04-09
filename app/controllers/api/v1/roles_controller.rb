@@ -2,7 +2,7 @@ class Api::V1::RolesController < ApplicationController
   # GET /roles
   def index
     @roles = Role.order(:name)
-    render json: @roles.map { |role| role.slice(:id, :name, :parent_id) }
+    render json: @roles
   end
 
   # GET /roles/:id

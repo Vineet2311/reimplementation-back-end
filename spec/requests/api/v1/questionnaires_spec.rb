@@ -8,7 +8,6 @@ RSpec.describe 'Questionnaire API', type: :request do
       produces 'application/json'
 
       response(200, 'successful') do
-
         after do |example|
           example.metadata[:response][:content] = {
             'application/json' => {
@@ -21,7 +20,6 @@ RSpec.describe 'Questionnaire API', type: :request do
 
       response(422, 'invalid request') do
         let(:questionnaire) { { name: '', min_question_score: 1, max_question_score: 5,type: "" } }
-
         after do |example|
           example.metadata[:response][:content] = {
             'application/json' => {

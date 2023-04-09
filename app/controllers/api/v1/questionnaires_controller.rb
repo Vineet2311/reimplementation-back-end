@@ -2,8 +2,12 @@ class Api::V1::QuestionnairesController < ApplicationController
   
   # GET on /questionnaires
   def index
-    @questionnaires = Questionnaire.order(:id)
-    render json: @questionnaires, status: :ok and return
+    begin
+      @questionnaires = Questionnaire.order(:id)
+      render json: @questionnaires, status: :ok and return
+    rescue
+      render json: $ERROR_INFO, status: :invalid_request and return
+    end
   end
   
   # GET on /questionnaires/:id

@@ -4,6 +4,16 @@ info:
   title: EXPERTIZA API V1
   version: v1
 paths:
+  "/api/v1/questionnaires":
+    get:
+      summary: list questionnaires
+      tags:
+      - Questionnaires
+      responses:
+        '200':
+          description: successful
+        '422':
+          description: invalid request
   "/api/v1/roles":
     get:
       summary: list roles
