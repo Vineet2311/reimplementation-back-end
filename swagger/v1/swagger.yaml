@@ -4,16 +4,295 @@ info:
   title: EXPERTIZA API V1
   version: v1
 paths:
+  "/api/v1/questionnaires/update/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    post:
+      summary: update questionnaire
+      responses:
+        '200':
+          description: successful
+  "/api/v1/questionnaires/copy/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    post:
+      summary: copy questionnaire
+      responses:
+        '200':
+          description: successful
+  "/api/v1/questionnaires/toggle_access/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    get:
+      summary: toggle_access questionnaire
+      responses:
+        '200':
+          description: successful
   "/api/v1/questionnaires":
     get:
       summary: list questionnaires
+      responses:
+        '200':
+          description: successful
+    post:
+      summary: create questionnaire
+      responses:
+        '200':
+          description: successful
+  "/api/v1/questionnaires/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    get:
+      summary: show questionnaire
+      responses:
+        '200':
+          description: successful
+    patch:
+      summary: update questionnaire
+      responses:
+        '200':
+          description: successful
+    put:
+      summary: update questionnaire
+      responses:
+        '200':
+          description: successful
+    delete:
+      summary: delete questionnaire
+      responses:
+        '200':
+          description: successful
+  "/api/v1/question":
+    get:
+      summary: list questions
       tags:
-      - Questionnaires
+      - Questions
       responses:
         '200':
           description: successful
         '422':
           description: invalid request
+    post:
+      summary: create question
+      tags:
+      - Questions
+      parameters: []
+      responses:
+        '201':
+          description: Created a question
+        '422':
+          description: Invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                question:
+                  type: object
+                  properties:
+                    txt:
+                      type: string
+                    weight:
+                      type: integer
+                    questionnaire_id:
+                      type: integer
+                    seq:
+                      type: string
+                    size:
+                      type: string
+                    alternatives:
+                      type: string
+                    break_before:
+                      type: boolean
+                    max_label:
+                      type: string
+                    min_label:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - type
+              required:
+              - question
+  "/api/v1/questions/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: ID of the question
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: show question
+      tags:
+      - Questions
+      parameters: []
+      responses:
+        '200':
+          description: successful
+        '404':
+          description: question not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                question:
+                  type: object
+                  properties:
+                    txt:
+                      type: string
+                    weight:
+                      type: integer
+                    questionnaire_id:
+                      type: integer
+                    seq:
+                      type: string
+                    size:
+                      type: string
+                    alternatives:
+                      type: string
+                    break_before:
+                      type: boolean
+                    max_label:
+                      type: string
+                    min_label:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - type
+              required:
+              - question
+    patch:
+      summary: update question
+      tags:
+      - Questions
+      parameters: []
+      responses:
+        '200':
+          description: successful
+        '422':
+          description: invalid request
+        '404':
+          description: question not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                question:
+                  type: object
+                  properties:
+                    txt:
+                      type: string
+                    weight:
+                      type: integer
+                    questionnaire_id:
+                      type: integer
+                    seq:
+                      type: string
+                    size:
+                      type: string
+                    alternatives:
+                      type: string
+                    break_before:
+                      type: boolean
+                    max_label:
+                      type: string
+                    min_label:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - type
+              required:
+              - question
+    put:
+      summary: update question
+      tags:
+      - Questions
+      parameters: []
+      responses:
+        '200':
+          description: successful
+        '422':
+          description: invalid request
+        '404':
+          description: question not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                question:
+                  type: object
+                  properties:
+                    txt:
+                      type: string
+                    weight:
+                      type: integer
+                    questionnaire_id:
+                      type: integer
+                    seq:
+                      type: string
+                    size:
+                      type: string
+                    alternatives:
+                      type: string
+                    break_before:
+                      type: boolean
+                    max_label:
+                      type: string
+                    min_label:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - type
+              required:
+              - question
+    delete:
+      summary: delete Question
+      tags:
+      - Questions
+      responses:
+        '200':
+          description: successful
+        '404':
+          description: not found
   "/api/v1/roles":
     get:
       summary: list roles

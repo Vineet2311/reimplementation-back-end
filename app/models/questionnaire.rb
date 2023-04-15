@@ -1,7 +1,8 @@
 class Questionnaire < ApplicationRecord
     # for doc on why we do it this way,
     # see http://blog.hasmanythrough.com/2007/1/15/basic-rails-association-cardinality
-    has_many :questions, dependent: :destroy # the collection of questions associated with this Questionnaire
+    has_many :questions
+    belongs_to :instructor
     has_many :assignments, through: :assignment_questionnaires
     
     validate :validate_questionnaire

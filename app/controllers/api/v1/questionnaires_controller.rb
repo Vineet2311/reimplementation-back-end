@@ -53,26 +53,9 @@ class Api::V1::QuestionnairesController < ApplicationController
   def destroy
     begin
       @questionnaire = Questionnaire.find(params[:id])
+      @questionnaire.delete
     rescue
       render json: $ERROR_INFO, status: :not_found and return
-    end
-    begin
-      name = @questionnaire.name
-      questions = @questionnaire.questions
-      # questions.each do |question|
-      #   question.delete
-      # end
-      unless questions.nil?
-        msg = "This questionnaire has questions associated with it. Use this endpoint to delete all questions for the questionnaire: "
-        link = "/questions/delete_all/" + @questionnaire.id.to_s
-        msg += link
-        render json: msg and return
-      else
-        @questionnaire.delete
-        render json: "The questionnaire \"#{name}\" has been successfully deleted.", status: :ok and return
-      end
-    rescue StandardError => e
-      render json: e.message, status: :unprocessable_entity and return
     end
   end
 
