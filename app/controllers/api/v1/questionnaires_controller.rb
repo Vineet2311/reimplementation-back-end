@@ -28,19 +28,10 @@ class Api::V1::QuestionnairesController < ApplicationController
       render json: "Questionnaire name cannot be blank.", status: :unprocessable_entity and return
     end
     begin
-      display_type = params[:type].split('Questionnaire')[0]
-      @questionnaire = Questionnaire.new if Questionnaire::QUESTIONNAIRE_TYPES.include? params[:type]
-      @questionnaire.private = params[:private] == 'true'
-      @questionnaire.name = params[:name] 
+      @questionnaire = Questionnaire.new(questionnaire_params)
+      puts @questionnaire.inspect
       @questionnaire.instructor_id = 6 # session[:user].id
-      @questionnaire.min_question_score = params[:min_question_score]
-      @questionnaire.max_question_score = params[:max_question_score]
-      @questionnaire.questionnaire_type = params[:type]
-      if %w[AuthorFeedback CourseSurvey TeammateReview GlobalSurvey AssignmentSurvey BookmarkRating].include?(display_type)
-        display_type = (display_type.split(/(?=[A-Z])/)).join('%')
-      end
-      @questionnaire.display_type = display_type
-      @questionnaire.instruction_loc = Questionnaire::DEFAULT_QUESTIONNAIRE_URL
+      @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)
       @questionnaire.save
       render json: @questionnaire, status: :created and return
     rescue StandardError
@@ -96,9 +87,16 @@ class Api::V1::QuestionnairesController < ApplicationController
 
   private
 
-  # Only allow a list of trusted parameters through.
   def questionnaire_params
-    params.permit(:name, :instructor_id, :private, :min_question_score,
-                                          :max_question_score, :type, :display_type, :instruction_loc)
+    params.require(:questionnaire).permit(:name, :questionnaire_type, :private, :min_question_score, :max_question_score)
   end
+
+  def sanitize_display_type(type)
+    display_type = type.split('Questionnaire')[0]
+    if %w[AuthorFeedback CourseSurvey TeammateReview GlobalSurvey AssignmentSurvey BookmarkRating].include?(display_type)
+      display_type = (display_type.split(/(?=[A-Z])/)).join('%')
+    end
+    display_type
+  end
+
 end

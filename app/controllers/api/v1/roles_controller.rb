@@ -1,5 +1,4 @@
 class Api::V1::RolesController < ApplicationController
-  rescue_from ActiveRecord::RecordNotFound, with: :role_not_found
   # GET /roles
   def index
     @roles = Role.order(:name)
@@ -10,8 +9,6 @@ class Api::V1::RolesController < ApplicationController
   def show
     @role = Role.find(params[:id])
     render json: @role.slice(:name, :parent_id)
-  rescue ActiveRecord::RecordNotFound => e
-    render json: { error: e.message }, status: :not_found
   end
 
   # POST /roles
@@ -45,9 +42,5 @@ class Api::V1::RolesController < ApplicationController
   # Only allow a list of trusted parameters through.
   def role_params
     params.require(:role).permit(:name, :parent_id, :default_page_id)
-  end
-
-  def role_not_found
-    render json: { error: "Role with id #{params[:id]} not found" }, status: :not_found
   end
 end
