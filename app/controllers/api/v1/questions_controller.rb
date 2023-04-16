@@ -74,9 +74,13 @@ class Api::V1::QuestionsController < ApplicationController
   def delete_all
     begin
       @questionnaire = Questionnaire.find(params[:id])
-      @questionnaire.questions.destroy_all
-      msg = "All questions for Questionnaire ID:" + params[:id].to_s + " has been successfully deleted!"
-      render json: msg, status: :ok
+      if @questionnaire.questions.size > 0
+        @questionnaire.questions.destroy_all
+        msg = "All questions for Questionnaire ID:" + params[:id].to_s + " has been successfully deleted!"
+        render json: msg, status: :ok
+      else
+        render json: "No questions associated to Questionnaire ID:" + params[:id].to_s, status: :unprocessable_entity and return
+      end
     rescue
       render json: $ERROR_INFO, status: :unprocessable_entity
     end

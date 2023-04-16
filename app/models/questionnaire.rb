@@ -3,7 +3,6 @@ class Questionnaire < ApplicationRecord
     # see http://blog.hasmanythrough.com/2007/1/15/basic-rails-association-cardinality
     has_many :questions
     # belongs_to :instructor
-    has_many :assignments, through: :assignment_questionnaires
     
     validate :validate_questionnaire
     validates :name, presence: true
@@ -24,10 +23,6 @@ class Questionnaire < ApplicationRecord
                            'QuizQuestionnaire'].freeze
    
     def delete
-      assignments.each do |assignment|
-        raise "The assignment #{assignment.name} uses this questionnaire.
-              Do you want to <A href='../assignment/delete/#{assignment.id}'>delete</A> the assignment?"
-      end
       destroy
     end
   
