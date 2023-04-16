@@ -1,9 +1,9 @@
 class Questionnaire < ApplicationRecord
-    # for doc on why we do it this way,
-    # see http://blog.hasmanythrough.com/2007/1/15/basic-rails-association-cardinality
-    has_many :questions
-    # belongs_to :instructor
-    
+    has_many :questions, dependent: :restrict_with_error
+    belongs_to :instructor
+  
+    before_destroy :check_for_question_associations
+
     validate :validate_questionnaire
     validates :name, presence: true
     validates :max_question_score, :min_question_score, numericality: true
@@ -21,11 +21,7 @@ class Questionnaire < ApplicationRecord
                            'CourseSurveyQuestionnaire',
                            'BookmarkRatingQuestionnaire',
                            'QuizQuestionnaire'].freeze
-   
-    def delete
-      destroy
-    end
-  
+     
     def max_possible_score
       results = Questionnaire.joins('INNER JOIN questions ON questions.questionnaire_id = questionnaires.id')
                              .select('SUM(questions.weight) * questionnaires.max_question_score as max_score')
@@ -59,4 +55,11 @@ class Questionnaire < ApplicationRecord
       results = Questionnaire.where('id <> ? and name = ? and instructor_id = ?', id, name, instructor_id)
       errors.add(:name, 'Questionnaire names must be unique.') if results.present?
     end
+
+    def check_for_question_associations
+      if questions.any?
+        raise ActiveRecord::DeleteRestrictionError.new(:base, "Cannot delete record because dependent questions exist")
+      end
+    end
+
   end

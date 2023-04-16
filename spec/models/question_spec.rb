@@ -36,7 +36,7 @@ RSpec.describe Question, type: :model do
     
     it "is not valid without a questionnaire" do
       question = Question.new(seq: 1, txt: "Sample question", question_type: "multiple_choice", break_before: true)
-      expect(question).not_to be_valid
+      expect(question).to_not be_valid
     end
   end
   
