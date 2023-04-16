@@ -23,26 +23,6 @@ class Questionnaire < ApplicationRecord
                            'BookmarkRatingQuestionnaire',
                            'QuizQuestionnaire'].freeze
  
-    def get_weighted_score(assignment, scores)
-      # create symbol for "varying rubrics" feature -Yang
-      round = AssignmentQuestionnaire.find_by(assignment_id: assignment.id, questionnaire_id: id).used_in_round
-      questionnaire_symbol = if round.nil?
-                               symbol
-                             else
-                               (symbol.to_s + round.to_s).to_sym
-                             end
-      compute_weighted_score(questionnaire_symbol, assignment, scores)
-    end
-  
-    def compute_weighted_score(symbol, assignment, scores)
-      aq = assignment_questionnaires.find_by(assignment_id: assignment.id)
-      if scores[symbol][:scores][:avg].nil?
-        0
-      else
-        scores[symbol][:scores][:avg] * aq.questionnaire_weight / 100.0
-      end
-    end
-  
   
     def delete
       assignments.each do |assignment|
@@ -74,16 +54,7 @@ class Questionnaire < ApplicationRecord
       questions.each do |question|
         new_question = question.dup
         new_question.questionnaire_id = questionnaire.id
-        new_question.size = '50,3' if (new_question.is_a?(Criterion) || new_question.is_a?(TextResponse)) && new_question.size.nil?
         new_question.save!
-        # advices = QuestionAdvice.where(question_id: question.id)
-        # next if advices.empty?
-  
-        # advices.each do |advice|
-        #   new_advice = advice.dup
-        #   new_advice.question_id = new_question.id
-        #   new_advice.save!
-        # end
       end
       questionnaire
     end
