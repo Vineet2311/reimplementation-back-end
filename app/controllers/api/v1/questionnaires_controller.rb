@@ -32,7 +32,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       puts @questionnaire.inspect
       @questionnaire.instructor_id = 6 # session[:user].id
       @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)
-      @questionnaire.save
+      @questionnaire.save!
       render json: @questionnaire, status: :created and return
     rescue StandardError
       msg = $ERROR_INFO

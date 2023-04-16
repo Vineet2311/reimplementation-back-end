@@ -68,10 +68,7 @@ describe Questionnaire, type: :model do
     allow(Questionnaire).to receive(:find).with('1').and_return(questionnaire)
     allow(Question).to receive(:where).with(questionnaire_id: '1').and_return([Question])
   end
-
   
-
-
   # describe '#delete' do
   #   it 'deletes all dependent objects and itself' do
   #     allow(questionnaire2).to receive(:questions).and_return([question1, question2])
@@ -89,26 +86,20 @@ describe Questionnaire, type: :model do
   #   end
   #end
 
-  # describe '.copy_questionnaire_details' do
+  describe '.copy_questionnaire_details' do
+    it 'creates a copy of the questionnaire with the given instructor_id' do
+      copied_questionnaire = Questionnaire.copy_questionnaire_details( { id: questionnaire.id}, questionnaire.instructor_id)
+      expect(copied_questionnaire.instructor_id).to eq(questionnaire.instructor_id)
+      expect(copied_questionnaire.name).to eq("Copy of #{questionnaire.name}")
+      expect(copied_questionnaire.created_at).to be_within(1.second).of(Time.zone.now)
+    end
 
-  #   it 'creates a copy of the questionnaire with the given instructor_id' do
-      
-  #     puts(questionnaire.id)
-  #     copied_questionnaire = Questionnaire.copy_questionnaire_details( { id: questionnaire.id}, questionnaire.instructor_id)
-  #     expect(copied_questionnaire.instructor_id).to eq(questionnaire.instructor_id)
-  #     expect(copied_questionnaire.name).to eq("Copy of #{questionnaire.name}")
-  #     expect(copied_questionnaire.created_at).to be_within(1.second).of(Time.zone.now)
-  #   end
+    it 'creates a copy of all questions belonging to the original questionnaire' do
+      copied_questionnaire = described_class.copy_questionnaire_details({ id: orig_questionnaire.id }, instructor_id)
+      expect(copied_questionnaire.questions.count).to eq(2)
+      expect(copied_questionnaire.questions.first.title).to eq(question1.title)
+      expect(copied_questionnaire.questions.second.title).to eq(question2.title)
+    end
+  end
 
-  #   it 'creates a copy of all questions belonging to the original questionnaire' do
-  #     copied_questionnaire = described_class.copy_questionnaire_details({ id: orig_questionnaire.id }, instructor_id)
-  #     expect(copied_questionnaire.questions.count).to eq(2)
-  #     expect(copied_questionnaire.questions.first.title).to eq(question1.title)
-  #     expect(copied_questionnaire.questions.second.title).to eq(question2.title)
-  #   end
-  # end
-
-
-
-  
 end
