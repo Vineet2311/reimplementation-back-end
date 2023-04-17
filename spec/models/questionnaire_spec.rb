@@ -1,26 +1,5 @@
 require 'rails_helper'
 describe Questionnaire, type: :model do
-
-  # name 'instructor6'
-  # role { Role.where(name: 'Instructor').first || association(:role_of_instructor) }
-  # password 'password'
-  # password_confirmation 'password'
-  # fullname '6, instructor'
-  # email 'expertiza@mailinator.com'
-  # parent_id 1
-  # private_by_default  false
-  # mru_directory_path  nil
-  # email_on_review true
-  # email_on_submission true
-  # email_on_review_of_review true
-  # is_new_user false
-  # master_permission_granted 0
-  # handle 'handle'
-  # digital_certificate nil
-  # timezonepref 'Eastern Time (US & Canada)'
-  # public_key nil
-  # copy_of_emails false
-  #@instructor_role = build(:role_of_instructor, id: 2, name: 'Instructor_role_test', description: '', parent_id: nil, default_page_id: nil)
   let(:role) {Role.create(name: 'Instructor', parent_id: nil, id: 2, name: 'Instructor_role_test', default_page_id: nil)}
   let(:instructor) { Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) }
   let(:questionnaire) { Questionnaire.new id: 1, name: 'abc', private: 0, min_question_score: 0, max_question_score: 10, instructor_id: instructor.id }
