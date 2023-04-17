@@ -1,6 +1,28 @@
 require 'rails_helper'
 describe Questionnaire, type: :model do
-  let(:instructor) { Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456') }
+
+  # name 'instructor6'
+  # role { Role.where(name: 'Instructor').first || association(:role_of_instructor) }
+  # password 'password'
+  # password_confirmation 'password'
+  # fullname '6, instructor'
+  # email 'expertiza@mailinator.com'
+  # parent_id 1
+  # private_by_default  false
+  # mru_directory_path  nil
+  # email_on_review true
+  # email_on_submission true
+  # email_on_review_of_review true
+  # is_new_user false
+  # master_permission_granted 0
+  # handle 'handle'
+  # digital_certificate nil
+  # timezonepref 'Eastern Time (US & Canada)'
+  # public_key nil
+  # copy_of_emails false
+  #@instructor_role = build(:role_of_instructor, id: 2, name: 'Instructor_role_test', description: '', parent_id: nil, default_page_id: nil)
+  let(:role) {Role.create(name: 'Instructor', parent_id: nil, id: 2, name: 'Instructor_role_test', default_page_id: nil)}
+  let(:instructor) { Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) }
   let(:questionnaire) { Questionnaire.new id: 1, name: 'abc', private: 0, min_question_score: 0, max_question_score: 10, instructor_id: instructor.id }
   let(:questionnaire1) { Questionnaire.new name: 'xyz', private: 0, max_question_score: 20, instructor_id: instructor.id }
   let(:questionnaire2) { Questionnaire.new name: 'pqr', private: 0, max_question_score: 10, instructor_id: instructor.id }
@@ -69,10 +91,11 @@ describe Questionnaire, type: :model do
     end
 
     it 'restricts deletion of questionnaire when it has associated questions' do
+      instructor.save!
       questionnaire.save!
       question1.save!
       question2.save!
-      expect { questionnaire.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
+      expect { questionnaire.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
     end
   end
 
@@ -82,19 +105,27 @@ describe Questionnaire, type: :model do
       allow(Question).to receive(:where).with(questionnaire_id: '1').and_return([Question])
     end
     
-    # it 'creates a copy of the questionnaire with the given instructor_id' do
-    #   copied_questionnaire = Questionnaire.copy_questionnaire_details( { id: questionnaire.id}, questionnaire.instructor_id)
-    #   expect(copied_questionnaire.instructor_id).to eq(questionnaire.instructor_id)
-    #   expect(copied_questionnaire.name).to eq("Copy of #{questionnaire.name}")
-    #   expect(copied_questionnaire.created_at).to be_within(1.second).of(Time.zone.now)
-    # end
+    it 'creates a copy of the questionnaire with the given instructor_id' do
+      instructor.save!
+      questionnaire.save!
+      question1.save!
+      question2.save!
+      copied_questionnaire = Questionnaire.copy_questionnaire_details( { id: questionnaire.id}, questionnaire.instructor_id)
+      expect(copied_questionnaire.instructor_id).to eq(questionnaire.instructor_id)
+      expect(copied_questionnaire.name).to eq("Copy of #{questionnaire.name}")
+      expect(copied_questionnaire.created_at).to be_within(1.second).of(Time.zone.now)
+    end
 
-    # it 'creates a copy of all questions belonging to the original questionnaire' do
-    #   copied_questionnaire = described_class.copy_questionnaire_details({ id: orig_questionnaire.id }, instructor_id)
-    #   expect(copied_questionnaire.questions.count).to eq(2)
-    #   expect(copied_questionnaire.questions.first.title).to eq(question1.title)
-    #   expect(copied_questionnaire.questions.second.title).to eq(question2.title)
-    # end
+    it 'creates a copy of all questions belonging to the original questionnaire' do
+      instructor.save!
+      questionnaire.save!
+      question1.save!
+      question2.save!
+      copied_questionnaire = described_class.copy_questionnaire_details({ id: questionnaire.id }, questionnaire.instructor_id)
+      expect(copied_questionnaire.questions.count).to eq(2)
+      expect(copied_questionnaire.questions.first.txt).to eq(question1.txt)
+      expect(copied_questionnaire.questions.second.txt).to eq(question2.txt)
+    end
   end
 
 end
