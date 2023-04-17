@@ -32,7 +32,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       puts @questionnaire.inspect
       @questionnaire.instructor_id = 6 # session[:user].id
       @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)
-      @questionnaire.save
+      @questionnaire.save!
       render json: @questionnaire, status: :created and return
     rescue StandardError
       msg = $ERROR_INFO
@@ -56,7 +56,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       # Save questionnaire information
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.update(questionnaire_params)
-      render json: 'The questionnaire has been successfully updated!', status: :ok and return
+      render json: @questionnaire, status: :ok and return
     rescue StandardError
       render json: $ERROR_INFO, status: :unprocessable_entity and return
     end
@@ -69,7 +69,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     @questionnaire = Questionnaire.copy_questionnaire_details(params, instructor_id)
     render json: "Copy of questionnaire #{@questionnaire.name} has been created successfully.", status: :ok and return
   rescue StandardError
-    render json: 'The questionnaire was not able to be copied. Please check the original course for missing information.' + $ERROR_INFO.to_s, status: :unprocessable_entity and return
+    render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
   end
 
   # GET on /questionnaires/toggle_access/:id
