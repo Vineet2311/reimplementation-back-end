@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Question, type: :model do
-    let(:questionnaire) { Questionnaire.new id:1, name: 'abc', private: 0, min_question_score: 0, max_question_score: 10, instructor_id: 1234 }
+    let(:role) {Role.create(name: 'Instructor', parent_id: nil, id: 2, name: 'Instructor_role_test', default_page_id: nil)}
+    let(:instructor) { Instructor.create(id: 1234, name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) }
+    let(:questionnaire) { Questionnaire.new id:1, name: 'abc', private: 0, min_question_score: 0, max_question_score: 10, instructor_id: instructor.id }
     
   describe "validations" do
     it "is valid with valid attributes" do
@@ -42,6 +44,8 @@ RSpec.describe Question, type: :model do
   
   describe "#delete" do
     it "destroys the question object" do
+      instructor.save!
+      questionnaire.save!
       question = Question.create(seq: 1, txt: "Sample question", question_type: "multiple_choice", break_before: true, questionnaire: questionnaire)
       expect { question.delete }.to change { Question.count }.by(-1)
     end
