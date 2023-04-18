@@ -14,7 +14,12 @@ RSpec.describe 'api/v1/questions', type: :request do
             }
           }
         end
-        run_test!
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          puts response
+          expect(data['title']).to eq('foo')
+        end
+    
       end
     end
   end

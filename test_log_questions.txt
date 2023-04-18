@@ -1,8 +1,17 @@
-.F.FFFFF
+#<ActionDispatch::TestResponse:0x00007f54db1b9b08>
+FF.FFFFF
 
 Failures:
 
-  1) api/v1/questions /api/v1/questions/delete_all/{id} delete successful returns a 200 response
+  1) api/v1/questions /api/v1/questions/types get successful returns a 200 response
+     Failure/Error: expect(data['title']).to eq('foo')
+
+     TypeError:
+       no implicit conversion of String into Integer
+     # ./spec/requests/api/v1/questions_spec.rb:20:in `[]'
+     # ./spec/requests/api/v1/questions_spec.rb:20:in `block (5 levels) in <top (required)>'
+
+  2) api/v1/questions /api/v1/questions/delete_all/{id} delete successful returns a 200 response
      Failure/Error:
        raise UnexpectedResponse,
          "Expected response code '#{response.code}' to match '#{expected}'\n" \
@@ -64,25 +73,25 @@ Failures:
      #   See docs for RSpec::Configuration#backtrace_exclusion_patterns and
      #   RSpec::Configuration#backtrace_inclusion_patterns for more information.
 
-  2) api/v1/questions /api/v1/questions post successful returns a 200 response
+  3) api/v1/questions /api/v1/questions post successful returns a 200 response
      Got 0 failures and 2 other errors:
 
-     2.1) Failure/Error: num_of_existed_questions = Questionnaire.find(questionnaire_id).questions.size
+     3.1) Failure/Error: num_of_existed_questions = Questionnaire.find(questionnaire_id).questions.size
 
           ActiveRecord::RecordNotFound:
             Couldn't find Questionnaire without an ID
           # ./app/controllers/api/v1/questions_controller.rb:22:in `create'
 
-     2.2) Failure/Error: example: JSON.parse(response.body, symbolize_names: true)
+     3.2) Failure/Error: example: JSON.parse(response.body, symbolize_names: true)
 
           NoMethodError:
             undefined method `body' for nil:NilClass
-          # ./spec/requests/api/v1/questions_spec.rb:64:in `block (5 levels) in <top (required)>'
+          # ./spec/requests/api/v1/questions_spec.rb:69:in `block (5 levels) in <top (required)>'
 
-  3) api/v1/questions /api/v1/questions/{id} get successful returns a 200 response
+  4) api/v1/questions /api/v1/questions/{id} get successful returns a 200 response
      Got 0 failures and 2 other errors:
 
-     3.1) Failure/Error:
+     4.1) Failure/Error:
             raise UnexpectedResponse,
               "Expected response code '#{response.code}' to match '#{expected}'\n" \
                 "Response body: #{response.body}"
@@ -143,28 +152,13 @@ Failures:
           #   See docs for RSpec::Configuration#backtrace_exclusion_patterns and
           #   RSpec::Configuration#backtrace_inclusion_patterns for more information.
 
-     3.2) Failure/Error: example: JSON.parse(response.body, symbolize_names: true)
+     4.2) Failure/Error: example: JSON.parse(response.body, symbolize_names: true)
 
           JSON::ParserError:
             unexpected token at 'No such Question exists.'
-          # ./spec/requests/api/v1/questions_spec.rb:84:in `block (5 levels) in <top (required)>'
+          # ./spec/requests/api/v1/questions_spec.rb:89:in `block (5 levels) in <top (required)>'
 
-  4) api/v1/questions /api/v1/questions/{id} patch successful returns a 200 response
-     Got 0 failures and 2 other errors:
-
-     4.1) Failure/Error: @question = Question.find(params[:id])
-
-          ActiveRecord::RecordNotFound:
-            Couldn't find Question with 'id'=123
-          # ./app/controllers/api/v1/questions_controller.rb:91:in `update'
-
-     4.2) Failure/Error: example: JSON.parse(response.body, symbolize_names: true)
-
-          NoMethodError:
-            undefined method `body' for nil:NilClass
-          # ./spec/requests/api/v1/questions_spec.rb:99:in `block (5 levels) in <top (required)>'
-
-  5) api/v1/questions /api/v1/questions/{id} put successful returns a 200 response
+  5) api/v1/questions /api/v1/questions/{id} patch successful returns a 200 response
      Got 0 failures and 2 other errors:
 
      5.1) Failure/Error: @question = Question.find(params[:id])
@@ -177,9 +171,24 @@ Failures:
 
           NoMethodError:
             undefined method `body' for nil:NilClass
-          # ./spec/requests/api/v1/questions_spec.rb:114:in `block (5 levels) in <top (required)>'
+          # ./spec/requests/api/v1/questions_spec.rb:104:in `block (5 levels) in <top (required)>'
 
-  6) api/v1/questions /api/v1/questions/{id} delete successful returns a 200 response
+  6) api/v1/questions /api/v1/questions/{id} put successful returns a 200 response
+     Got 0 failures and 2 other errors:
+
+     6.1) Failure/Error: @question = Question.find(params[:id])
+
+          ActiveRecord::RecordNotFound:
+            Couldn't find Question with 'id'=123
+          # ./app/controllers/api/v1/questions_controller.rb:91:in `update'
+
+     6.2) Failure/Error: example: JSON.parse(response.body, symbolize_names: true)
+
+          NoMethodError:
+            undefined method `body' for nil:NilClass
+          # ./spec/requests/api/v1/questions_spec.rb:119:in `block (5 levels) in <top (required)>'
+
+  7) api/v1/questions /api/v1/questions/{id} delete successful returns a 200 response
      Failure/Error:
        raise UnexpectedResponse,
          "Expected response code '#{response.code}' to match '#{expected}'\n" \
@@ -241,15 +250,16 @@ Failures:
      #   See docs for RSpec::Configuration#backtrace_exclusion_patterns and
      #   RSpec::Configuration#backtrace_inclusion_patterns for more information.
 
-Finished in 0.13194 seconds (files took 2.9 seconds to load)
-8 examples, 6 failures
+Finished in 0.16077 seconds (files took 2.72 seconds to load)
+8 examples, 7 failures
 
 Failed examples:
 
-rspec ./spec/requests/api/v1/questions_spec.rb:27 # api/v1/questions /api/v1/questions/delete_all/{id} delete successful returns a 200 response
-rspec ./spec/requests/api/v1/questions_spec.rb:59 # api/v1/questions /api/v1/questions post successful returns a 200 response
-rspec ./spec/requests/api/v1/questions_spec.rb:78 # api/v1/questions /api/v1/questions/{id} get successful returns a 200 response
-rspec ./spec/requests/api/v1/questions_spec.rb:93 # api/v1/questions /api/v1/questions/{id} patch successful returns a 200 response
-rspec ./spec/requests/api/v1/questions_spec.rb:108 # api/v1/questions /api/v1/questions/{id} put successful returns a 200 response
-rspec ./spec/requests/api/v1/questions_spec.rb:123 # api/v1/questions /api/v1/questions/{id} delete successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:8 # api/v1/questions /api/v1/questions/types get successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:32 # api/v1/questions /api/v1/questions/delete_all/{id} delete successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:64 # api/v1/questions /api/v1/questions post successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:83 # api/v1/questions /api/v1/questions/{id} get successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:98 # api/v1/questions /api/v1/questions/{id} patch successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:113 # api/v1/questions /api/v1/questions/{id} put successful returns a 200 response
+rspec ./spec/requests/api/v1/questions_spec.rb:128 # api/v1/questions /api/v1/questions/{id} delete successful returns a 200 response
 
