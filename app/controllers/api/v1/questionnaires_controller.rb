@@ -6,7 +6,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaires = Questionnaire.order(:id)
       render json: @questionnaires, status: :ok and return
     rescue
-      render json: $ERROR_INFO, status: :invalid_request and return
+      render json: $ERROR_INFO, status: :unprocessable_entity and return
     end
   end
   
@@ -16,8 +16,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire = Questionnaire.find(params[:id])
       render json: @questionnaire, status: :ok and return
     rescue
-      msg = "No such Questionnaire exists."
-      render json: msg, status: :not_found and return
+      render json: $ERROR_INFO, status: :not_found and return
     end
   end
   

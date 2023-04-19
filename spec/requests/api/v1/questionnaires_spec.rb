@@ -158,7 +158,6 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
     end
 
     put('update questionnaire') do
-      # some code here
       consumes 'application/json'
       produces 'application/json'
 
@@ -199,8 +198,7 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
         end
         schema type: :string
         run_test!
-      end
-      
+      end  
     end
 
     # delete('delete questionnaire') do
