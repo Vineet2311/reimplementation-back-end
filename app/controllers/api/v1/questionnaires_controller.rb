@@ -48,9 +48,13 @@ class Api::V1::QuestionnairesController < ApplicationController
 
   # PUT on /questionnaires/:id
   def update
+    # Save questionnaire information
     begin
-      # Save questionnaire information
       @questionnaire = Questionnaire.find(params[:id])
+    rescue StandardError
+      render json: $ERROR_INFO.to_s, status: :not_found and return
+    end
+    begin
       @questionnaire.update(questionnaire_params)
       @questionnaire.save!
       render json: @questionnaire, status: :ok and return
