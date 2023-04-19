@@ -22,6 +22,7 @@ class Questionnaire < ApplicationRecord
                            'BookmarkRatingQuestionnaire',
                            'QuizQuestionnaire'].freeze
      
+    # Maximum possible score calculates maximum possible score based on questions associated to questionnaire                       
     def max_possible_score
       results = Questionnaire.joins('INNER JOIN questions ON questions.questionnaire_id = questionnaires.id')
                              .select('SUM(questions.weight) * questionnaires.max_question_score as max_score')
@@ -56,6 +57,7 @@ class Questionnaire < ApplicationRecord
       errors.add(:name, 'Questionnaire names must be unique.') if results.present?
     end
 
+    # Check_for_question_associations checks if questionnaire has associated questions or not
     def check_for_question_associations
       if questions.any?
         raise ActiveRecord::DeleteRestrictionError.new(:base, "Cannot delete record because dependent questions exist")
