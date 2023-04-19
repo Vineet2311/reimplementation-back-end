@@ -2,7 +2,6 @@ require 'swagger_helper'
 
 RSpec.describe 'api/v1/questionnaires', type: :request do
 
-  # GET on /questionnaires
   path '/api/v1/questionnaires' do
     let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
     
@@ -313,7 +312,6 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
           end
         end
       end
-
   end
 
   path '/api/v1/questionnaires/copy/{id}' do

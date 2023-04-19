@@ -11,8 +11,7 @@ class Api::V1::QuestionsController < ApplicationController
       @question = Question.find(params[:id])
       render json: @question, status: :ok
     rescue
-      msg = "No such Question exists."
-      render json: msg, status: :not_found
+      render json: $ERROR_INFO.to_s, status: :not_found
     end
   end
 
@@ -47,10 +46,10 @@ class Api::V1::QuestionsController < ApplicationController
     end
     
     begin
-      question.save
+      question.save!
       render json: question, status: :created
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
@@ -59,13 +58,13 @@ class Api::V1::QuestionsController < ApplicationController
     begin
       question = Question.find(params[:id])
     rescue
-      render json: $ERROR_INFO, status: :not_found and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
     begin
       question.destroy
       render json: 'You have successfully deleted the question!', status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
@@ -91,9 +90,9 @@ class Api::V1::QuestionsController < ApplicationController
     @question = Question.find(params[:id])
     begin
       @question.update(question_params)
-      render json: 'The question was successfully updated.', status: :ok
+      render json: @question, status: :ok
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
