@@ -6,7 +6,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaires = Questionnaire.order(:id)
       render json: @questionnaires, status: :ok and return
     rescue
-      render json: $ERROR_INFO, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
     end
   end
   
@@ -16,7 +16,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire = Questionnaire.find(params[:id])
       render json: @questionnaire, status: :ok and return
     rescue
-      render json: $ERROR_INFO, status: :not_found and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
   
@@ -32,8 +32,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire.save!
       render json: @questionnaire, status: :created and return
     rescue StandardError
-      msg = $ERROR_INFO
-      render json: msg, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
     end
   end
 
@@ -43,7 +42,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.delete
     rescue
-      render json: $ERROR_INFO, status: :not_found and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
 
@@ -56,7 +55,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire.save!
       render json: @questionnaire, status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
     end
   end
 
@@ -75,11 +74,11 @@ class Api::V1::QuestionnairesController < ApplicationController
     begin
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.private = !@questionnaire.private
-      @questionnaire.save
+      @questionnaire.save!
       @access = @questionnaire.private == true ? 'private' : 'public'
       render json: "The questionnaire \"#{@questionnaire.name}\" has been successfully made #{@access}. ", status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
 

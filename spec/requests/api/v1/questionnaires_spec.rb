@@ -201,10 +201,98 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
       end  
     end
 
-    # delete('delete questionnaire') do
-    #   # some code here
-    # end
+    delete('delete questionnaire') do
+      produces 'application/json'
+      response(204, 'successful') do
+        run_test! do
+          expect(Questionnaire.exists?(id)).to eq(false)
+        end
+      end
+
+      response(404, 'not found') do
+        let(:id) { 0 }
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/questionnaires/toggle_access/{id}' do
+    parameter name: 'id', in: :path, type: :integer
+      let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
+      let(:instructor) do 
+        role
+        Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) 
+      end
+
+      let(:valid_questionnaire_params) do
+        {
+          name: 'Test Questionnaire',
+          questionnaire_type: 'AuthorFeedbackReview',
+          private: false,
+          min_question_score: 0,
+          max_question_score: 5,
+          instructor_id: instructor.id
+        }
+      end
+
+      let(:questionnaire) do
+        instructor
+        Questionnaire.create(valid_questionnaire_params)
+      end
+
+      let(:id) do
+        questionnaire
+        questionnaire.id 
+      end
+
+      get('toggle access') do
+        produces 'application/json'
+        response(200, 'successful') do
+          run_test! do 
+            expect(response.body).to include(" has been successfully made private. ")
+          end
+        end
+        response(404, 'not found') do
+          let(:id) { 0 }
+          run_test! do
+            expect(response.body).to include("Couldn't find Questionnaire")
+          end
+        end
+      end
 
   end
-    
+
+  path '/api/v1/questionnaires/copy/{id}' do
+    parameter name: 'id', in: :path, type: :integer
+      let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
+      let(:instructor) do 
+        role
+        Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) 
+      end
+
+      let(:valid_questionnaire_params) do
+        {
+          name: 'Test Questionnaire',
+          questionnaire_type: 'AuthorFeedbackReview',
+          private: false,
+          min_question_score: 0,
+          max_question_score: 5,
+          instructor_id: instructor.id
+        }
+      end
+
+      let(:questionnaire) do
+        instructor
+        Questionnaire.create(valid_questionnaire_params)
+      end
+
+      let(:id) do
+        questionnaire
+        questionnaire.id 
+      end
+
+      post('copy questionnaire') do
+        
+      end
+  end
 end
