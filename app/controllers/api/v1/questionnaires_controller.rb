@@ -29,8 +29,6 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
     begin
       @questionnaire = Questionnaire.new(questionnaire_params)
-      puts @questionnaire.inspect
-      @questionnaire.instructor_id = 6 # session[:user].id
       @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)
       @questionnaire.save!
       render json: @questionnaire, status: :created and return
@@ -56,6 +54,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       # Save questionnaire information
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.update(questionnaire_params)
+      @questionnaire.save!
       render json: @questionnaire, status: :ok and return
     rescue StandardError
       render json: $ERROR_INFO, status: :unprocessable_entity and return
@@ -88,7 +87,7 @@ class Api::V1::QuestionnairesController < ApplicationController
   private
 
   def questionnaire_params
-    params.require(:questionnaire).permit(:name, :questionnaire_type, :private, :min_question_score, :max_question_score)
+    params.require(:questionnaire).permit(:name, :questionnaire_type, :private, :min_question_score, :max_question_score, :instructor_id)
   end
 
   def sanitize_display_type(type)

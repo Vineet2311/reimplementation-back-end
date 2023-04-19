@@ -13,7 +13,6 @@ Rails.application.routes.draw do
       
       resources :questionnaires do
         collection do
-          post 'update/:id', to: 'questionnaires#update', as: 'update'
           post 'copy/:id', to: 'questionnaires#copy', as: 'copy'
           get 'toggle_access/:id', to: 'questionnaires#toggle_access', as: 'toggle_access'
         end
