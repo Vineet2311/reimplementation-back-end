@@ -1,10 +1,13 @@
 class Api::V1::QuestionsController < ApplicationController
+  
+  # Index method returns the list of questions JSON object
   # GET on /questions
   def index
     @questions = Question.order(:id)
     render json: @questions, status: :ok
   end
 
+  # Show method returns the question object with id - {:id}
   # GET on /questions/:id
   def show
     begin
@@ -15,6 +18,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
   end
 
+  # Create method returns the JSON object of created question
   # POST on /questions
   def create
     questionnaire_id = params[:id] unless params[:id].nil?
@@ -53,6 +57,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
   end
 
+  # Destroy method deletes the question with id - {:id}
   # DELETE on /questions/:id
   def destroy
     begin
@@ -68,6 +73,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
   end
 
+  # Delete_all method deletes all the questions and returns the status code
   # DELETE on /questions/delete_all/<questionnaire_id>
   # Endpoint to delete all questions associated to a particular questionnaire.
   def delete_all
@@ -85,6 +91,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
   end
 
+  # Update method updates the question with id - {:id} and returns its JSON object
   # PUT on /questions/:id
   def update
     @question = Question.find(params[:id])

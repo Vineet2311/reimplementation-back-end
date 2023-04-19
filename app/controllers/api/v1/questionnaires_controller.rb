@@ -1,5 +1,6 @@
 class Api::V1::QuestionnairesController < ApplicationController
   
+  # Index method returns the list of JSON objects of the questionnaire
   # GET on /questionnaires
   def index
     begin
@@ -10,6 +11,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
   end
   
+  # Show method returns the JSON object of questionnaire with id = {:id}
   # GET on /questionnaires/:id
   def show
     begin
@@ -20,6 +22,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
   end
   
+  # Create method creates a questionnaire and returns the JSON object of the created questionnaire
   # POST on /questionnaires
   # Instructor Id statically defined since implementation of Instructor model is out of scope of E2345.
   def create
@@ -36,6 +39,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
   end
 
+  # Destroy method deletes the questionnaire object with id- {:id}
   # DELETE on /questionnaires/:id
   def destroy
     begin
@@ -46,6 +50,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
   end
 
+  # Update method updates the questionnaire object with id - {:id} and returns the updated questionnaire JSON object
   # PUT on /questionnaires/:id
   def update
     # Save questionnaire information
@@ -63,6 +68,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
   end
 
+  # Copy method creates a copy of questionnaire with id - {:id} and return its JSON object
   # POST on /questionnaires/copy/:id
   def copy
     @questionnaire = Questionnaire.copy_questionnaire_details(params)
@@ -71,6 +77,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     render json: $ERROR_INFO.to_s, status: :not_found and return
   end
 
+  # Toggle access method toggles the private variable of the questionnaire with id - {:id} and return its JSON object
   # GET on /questionnaires/toggle_access/:id
   def toggle_access
     begin
