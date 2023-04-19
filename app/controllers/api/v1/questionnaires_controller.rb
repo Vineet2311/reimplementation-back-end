@@ -66,9 +66,9 @@ class Api::V1::QuestionnairesController < ApplicationController
   # POST on /questionnaires/copy/:id
   def copy
     @questionnaire = Questionnaire.copy_questionnaire_details(params)
-    render json: "Copy of questionnaire #{@questionnaire.name} has been created successfully.", status: :ok and return
+    render json: "Copy of the questionnaire has been created successfully.", status: :ok and return
   rescue StandardError
-    render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
+    render json: $ERROR_INFO.to_s, status: :not_found and return
   end
 
   # GET on /questionnaires/toggle_access/:id

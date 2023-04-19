@@ -299,11 +299,13 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
 
       get('toggle access') do
         produces 'application/json'
+        
         response(200, 'successful') do
           run_test! do 
             expect(response.body).to include(" has been successfully made private. ")
           end
         end
+        
         response(404, 'not found') do
           let(:id) { 0 }
           run_test! do
@@ -344,7 +346,21 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
       end
 
       post('copy questionnaire') do
+        consumes 'application/json'
+        produces 'application/json'
+
+        response(200, 'successful') do
+          run_test! do 
+            expect(response.body).to eq("Copy of the questionnaire has been created successfully.")
+          end
+        end
         
+        response(404, 'not found') do
+          let(:id) { 0 }
+          run_test! do
+            expect(response.body).to include("Couldn't find Questionnaire")
+          end
+        end
       end
   end
 end
