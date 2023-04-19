@@ -65,9 +65,7 @@ class Api::V1::QuestionnairesController < ApplicationController
 
   # POST on /questionnaires/copy/:id
   def copy
-    # instructor_id = session[:user].instructor_id
-    instructor_id = 6
-    @questionnaire = Questionnaire.copy_questionnaire_details(params, instructor_id)
+    @questionnaire = Questionnaire.copy_questionnaire_details(params)
     render json: "Copy of questionnaire #{@questionnaire.name} has been created successfully.", status: :ok and return
   rescue StandardError
     render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return

@@ -178,7 +178,9 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
                 instructor_id: { type: :integer }
               },
               required: %w[id name questionnaire_type private min_question_score max_question_score created_at updated_at instructor_id]
-        run_test! 
+        run_test! do
+          expect(response.body).to include('"name":"Test Questionnaire"') 
+        end
       end
 
       response(404, 'not_found') do
@@ -259,7 +261,9 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
 
       response(404, 'not found') do
         let(:id) { 0 }
-        run_test!
+        run_test! do
+          expect(response.body).to include("Couldn't find Questionnaire")
+        end
       end
     end
   end
