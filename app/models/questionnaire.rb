@@ -64,4 +64,15 @@ class Questionnaire < ApplicationRecord
       end
     end
 
+
+    def as_json(options = {})
+        super(options.merge({
+                              only: %i[id name private min_question_score max_question_score instructor_id created_at updated_at questionnaire_type],
+                              include: {
+                                instructor: { only: %i[name email fullname password role] }
+                              }
+                            })).tap do |hash|
+          hash['instructor'] ||= { id: nil, name: nil }
+        end
+    end
   end
