@@ -10,22 +10,20 @@ describe Questionnaire, type: :model do
   let(:question1) { questionnaire.questions.build(weight: 1, id: 1, seq: 1, txt: "que 1", question_type: "Scale", break_before: true) }
   let(:question2) { questionnaire.questions.build(weight: 10, id: 2, seq: 2, txt: "que 2", question_type: "Checkbox", break_before: true) }
   
-  
   describe '#name' do
     # Test validates the name of the questionnaire
     it 'returns the name of the Questionnaire' do
       expect(questionnaire.name).to eq('abc')
+      expect(questionnaire1.name).to eq('xyz')
+      expect(questionnaire2.name).to eq('pqr')
     end
+
     # Test ensures that the name field of the questionnaire is not blank
     it 'Validate presence of name which cannot be blank' do
       questionnaire.name = '  '
       expect(questionnaire).not_to be_valid
     end
   end
-
-  
-  
-  # Test ensures maximum score is an integer
 
   describe '#instructor_id' do
     # Test validates the instructor id in the questionnaire 
@@ -39,6 +37,7 @@ describe Questionnaire, type: :model do
     it 'validate maximum score' do
       expect(questionnaire.max_question_score).to eq(10)
     end
+
     # Test ensures maximum score is an integer
     it 'validate maximum score is integer' do
       expect(questionnaire.max_question_score).to eq(10)
@@ -51,7 +50,8 @@ describe Questionnaire, type: :model do
       expect(questionnaire.max_question_score).to eq(10)
       questionnaire.max_question_score = -10
       expect(questionnaire).not_to be_valid
-      questionnaire.max_question_score = 10
+      questionnaire.max_question_score = 0
+      expect(questionnaire).not_to be_valid
     end
 
     # Test ensures maximum score is greater than the minimum score
@@ -59,7 +59,8 @@ describe Questionnaire, type: :model do
       expect(questionnaire.min_question_score).to eq(0)
       questionnaire.min_question_score = 10
       expect(questionnaire).not_to be_valid
-      questionnaire.min_question_score = 0
+      questionnaire.min_question_score = 1
+      expect(questionnaire).to be_valid
     end
   end
 

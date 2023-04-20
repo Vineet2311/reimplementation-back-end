@@ -10,7 +10,7 @@ RSpec.describe 'api/v1/questions', type: :request do
       Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) 
     end
 
-    let(:questionnaire1) do
+    let(:questionnaire) do
       instructor
       Questionnaire.create(
         name: 'Questionnaire 1',
@@ -23,23 +23,25 @@ RSpec.describe 'api/v1/questions', type: :request do
     end
 
     let(:question1) do
-      questionnaire1
+      questionnaire
       Question.create(
         seq: 1, 
         txt: "test question 1", 
         question_type: "multiple_choice", 
         break_before: true, 
+        weight: 5,
         questionnaire: questionnaire
       )
     end
 
     let(:question2) do
-      questionnaire1
+      questionnaire
       Question.create(
         seq: 2, 
         txt: "test question 2", 
         question_type: "multiple_choice", 
         break_before: false, 
+        weight: 10,
         questionnaire: questionnaire
       )
     end
@@ -51,6 +53,43 @@ RSpec.describe 'api/v1/questions', type: :request do
           expect(response.body.size).to eq(2)
         end
       end
+    end
+
+    post('create question') do
+      consumes 'application/json'
+      produces 'application/json'
+      
+      let(:valid_question_params) do
+        {
+          id: questionnaire.id,
+          txt: "test question", 
+          question_type: "multiple_choice", 
+          break_before: false,
+          weight: 10
+        }
+      end
+
+      parameter name: :question, in: :body, schema: {
+        type: :object,
+        properties: {
+          weight: { type: :integer },
+          questionnaire_id: { type: :integer },
+          break_before: { type: :boolean },
+          txt: { type: :string },
+          question_type: { type: :string }
+        }      
+      }
+
+      response(201, 'created') do
+        let(:question) do
+          questionnaire
+          Question.create(valid_question_params)
+        end
+        run_test! do
+          expect(response.body).to include('"seq":3')
+        end
+      end
+
     end
 
   end
