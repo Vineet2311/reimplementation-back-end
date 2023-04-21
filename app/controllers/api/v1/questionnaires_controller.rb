@@ -1,26 +1,28 @@
 class Api::V1::QuestionnairesController < ApplicationController
   
+  # Index method returns the list of JSON objects of the questionnaire
   # GET on /questionnaires
   def index
     begin
       @questionnaires = Questionnaire.order(:id)
       render json: @questionnaires, status: :ok and return
     rescue
-      render json: $ERROR_INFO, status: :invalid_request and return
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
     end
   end
   
+  # Show method returns the JSON object of questionnaire with id = {:id}
   # GET on /questionnaires/:id
   def show
     begin
       @questionnaire = Questionnaire.find(params[:id])
       render json: @questionnaire, status: :ok and return
     rescue
-      msg = "No such Questionnaire exists."
-      render json: msg, status: :not_found and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
   
+  # Create method creates a questionnaire and returns the JSON object of the created questionnaire
   # POST on /questionnaires
   # Instructor Id statically defined since implementation of Instructor model is out of scope of E2345.
   def create
@@ -29,66 +31,70 @@ class Api::V1::QuestionnairesController < ApplicationController
     end
     begin
       @questionnaire = Questionnaire.new(questionnaire_params)
-      puts @questionnaire.inspect
-      @questionnaire.instructor_id = 6 # session[:user].id
       @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)
       @questionnaire.save!
       render json: @questionnaire, status: :created and return
     rescue StandardError
-      msg = $ERROR_INFO
-      render json: msg, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
     end
   end
 
+  # Destroy method deletes the questionnaire object with id- {:id}
   # DELETE on /questionnaires/:id
   def destroy
     begin
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.delete
     rescue
-      render json: $ERROR_INFO, status: :not_found and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
 
+  # Update method updates the questionnaire object with id - {:id} and returns the updated questionnaire JSON object
   # PUT on /questionnaires/:id
   def update
+    # Save questionnaire information
     begin
-      # Save questionnaire information
       @questionnaire = Questionnaire.find(params[:id])
+    rescue StandardError
+      render json: $ERROR_INFO.to_s, status: :not_found and return
+    end
+    begin
       @questionnaire.update(questionnaire_params)
+      @questionnaire.save!
       render json: @questionnaire, status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
     end
   end
 
+  # Copy method creates a copy of questionnaire with id - {:id} and return its JSON object
   # POST on /questionnaires/copy/:id
   def copy
-    # instructor_id = session[:user].instructor_id
-    instructor_id = 6
-    @questionnaire = Questionnaire.copy_questionnaire_details(params, instructor_id)
-    render json: "Copy of questionnaire #{@questionnaire.name} has been created successfully.", status: :ok and return
+    @questionnaire = Questionnaire.copy_questionnaire_details(params)
+    render json: "Copy of the questionnaire has been created successfully.", status: :ok and return
   rescue StandardError
-    render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
+    render json: $ERROR_INFO.to_s, status: :not_found and return
   end
 
+  # Toggle access method toggles the private variable of the questionnaire with id - {:id} and return its JSON object
   # GET on /questionnaires/toggle_access/:id
   def toggle_access
     begin
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.private = !@questionnaire.private
-      @questionnaire.save
+      @questionnaire.save!
       @access = @questionnaire.private == true ? 'private' : 'public'
       render json: "The questionnaire \"#{@questionnaire.name}\" has been successfully made #{@access}. ", status: :ok and return
     rescue StandardError
-      render json: $ERROR_INFO, status: :unprocessable_entity and return
+      render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
 
   private
 
   def questionnaire_params
-    params.require(:questionnaire).permit(:name, :questionnaire_type, :private, :min_question_score, :max_question_score)
+    params.require(:questionnaire).permit(:name, :questionnaire_type, :private, :min_question_score, :max_question_score, :instructor_id)
   end
 
   def sanitize_display_type(type)

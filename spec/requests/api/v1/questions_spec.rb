@@ -2,136 +2,95 @@ require 'swagger_helper'
 
 RSpec.describe 'api/v1/questions', type: :request do
 
-  path '/api/v1/questions/types' do
-
-    get('types question') do
-      response(200, 'successful') do
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
-      end
-    end
-  end
-
-  path '/api/v1/questions/delete_all/{id}' do
-    # You'll want to customize the parameter types...
-    parameter name: 'id', in: :path, type: :string, description: 'id'
-
-    delete('delete_all question') do
-      response(200, 'successful') do
-        let(:id) { '123' }
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
-      end
-    end
-  end
-
   path '/api/v1/questions' do
+    let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
+    
+    let(:instructor) do 
+      role
+      Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) 
+    end
+
+    let(:questionnaire) do
+      instructor
+      Questionnaire.create(
+        name: 'Questionnaire 1',
+        questionnaire_type: 'AuthorFeedbackReview',
+        private: true,
+        min_question_score: 0,
+        max_question_score: 10,
+        instructor_id: instructor.id
+      )
+    end
+
+    let(:question1) do
+      questionnaire
+      Question.create(
+        seq: 1, 
+        txt: "test question 1", 
+        question_type: "multiple_choice", 
+        break_before: true, 
+        weight: 5,
+        questionnaire: questionnaire
+      )
+    end
+
+    let(:question2) do
+      questionnaire
+      Question.create(
+        seq: 2, 
+        txt: "test question 2", 
+        question_type: "multiple_choice", 
+        break_before: false, 
+        weight: 10,
+        questionnaire: questionnaire
+      )
+    end
 
     get('list questions') do
+      produces 'application/json'
       response(200, 'successful') do
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
+        run_test! do
+          expect(response.body.size).to eq(2)
         end
-        run_test!
       end
     end
 
     post('create question') do
-      response(200, 'successful') do
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
+      consumes 'application/json'
+      produces 'application/json'
+      
+      let(:valid_question_params) do
+        {
+          id: questionnaire.id,
+          txt: "test question", 
+          question_type: "multiple_choice", 
+          break_before: false,
+          weight: 10
+        }
       end
-    end
-  end
 
-  path '/api/v1/questions/{id}' do
-    # You'll want to customize the parameter types...
-    parameter name: 'id', in: :path, type: :string, description: 'id'
+      parameter name: :question, in: :body, schema: {
+        type: :object,
+        properties: {
+          weight: { type: :integer },
+          questionnaire_id: { type: :integer },
+          break_before: { type: :boolean },
+          txt: { type: :string },
+          question_type: { type: :string }
+        }      
+      }
 
-    get('show question') do
-      response(200, 'successful') do
-        let(:id) { '123' }
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
+      response(201, 'created') do
+        let(:question) do
+          questionnaire
+          Question.create(valid_question_params)
         end
-        run_test!
-      end
-    end
-
-    patch('update question') do
-      response(200, 'successful') do
-        let(:id) { '123' }
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
+        run_test! do
+          expect(response.body).to include('"seq":3')
         end
-        run_test!
       end
+
     end
 
-    put('update question') do
-      response(200, 'successful') do
-        let(:id) { '123' }
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
-      end
-    end
-
-    delete('delete question') do
-      response(200, 'successful') do
-        let(:id) { '123' }
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
-        run_test!
-      end
-    end
   end
 end
