@@ -15,6 +15,7 @@ class Api::V1::QuestionnairesController < ApplicationController
       render json: @questionnaire, status: :ok and return
     rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
+    end
   end
   
   # Create method creates a questionnaire and returns the JSON object of the created questionnaire

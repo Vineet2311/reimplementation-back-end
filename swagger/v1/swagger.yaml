@@ -7,89 +7,21 @@ paths:
   "/api/v1/questionnaires":
     get:
       summary: list questionnaires
+      tags:
+      - Questionnaires
       responses:
         '200':
           description: successful
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    questionnaire_type:
-                      type: string
-                    private:
-                      type: boolean
-                    min_question_score:
-                      type: integer
-                    max_question_score:
-                      type: integer
-                    created_at:
-                      type: string
-                      format: date-time
-                    updated_at:
-                      type: string
-                      format: date-time
-                    instructor_id:
-                      type: integer
-                  required:
-                  - id
-                  - name
-                  - questionnaire_type
-                  - private
-                  - min_question_score
-                  - max_question_score
-                  - created_at
-                  - updated_at
-                  - instructor_id
-        '400':
-          description: invalid_request
     post:
       summary: create questionnaire
+      tags:
+      - Questionnaires
       parameters: []
       responses:
         '201':
           description: created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  questionnaire_type:
-                    type: string
-                  private:
-                    type: boolean
-                  min_question_score:
-                    type: integer
-                  max_question_score:
-                    type: integer
-                  created_at:
-                    type: string
-                    format: date-time
-                  updated_at:
-                    type: string
-                    format: date-time
-                  instructor_id:
-                    type: integer
-                required:
-                - id
-                - name
-                - questionnaire_type
-                - private
-                - min_question_score
-                - max_question_score
-                - created_at
-                - updated_at
-                - instructor_id
+        '422':
+          description: unprocessable entity
       requestBody:
         content:
           application/json:
@@ -106,9 +38,16 @@ paths:
                   type: integer
                 max_question_score:
                   type: integer
+                instructor_id:
+                  type: integer
               required:
+              - id
               - name
               - questionnaire_type
+              - private
+              - min_question_score
+              - max_question_score
+              - instructor_id
   "/api/v1/questionnaires/{id}":
     parameters:
     - name: id
@@ -118,65 +57,78 @@ paths:
         type: integer
     get:
       summary: show questionnaire
+      tags:
+      - Questionnaires
       responses:
         '200':
           description: successful
+        '404':
+          description: not_found
+    put:
+      summary: update questionnaire
+      tags:
+      - Questionnaires
+      parameters: []
+      responses:
+        '200':
+          description: successful
+        '404':
+          description: not found
+        '422':
+          description: unprocessable entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  questionnaire_type:
-                    type: string
-                  private:
-                    type: boolean
-                  min_question_score:
-                    type: integer
-                  max_question_score:
-                    type: integer
-                  created_at:
-                    type: string
-                    format: date-time
-                  updated_at:
-                    type: string
-                    format: date-time
-                  instructor_id:
-                    type: integer
-                required:
-                - id
-                - name
-                - questionnaire_type
-                - private
-                - min_question_score
-                - max_question_score
-                - created_at
-                - updated_at
-                - instructor_id
-        '404':
-          description: not_found
-  "/api/v1/questions/types":
-    get:
-      summary: types question
+                type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                min_question_score:
+                  type: integer
+    delete:
+      summary: delete questionnaire
+      tags:
+      - Questionnaires
       responses:
-        '200':
+        '204':
           description: successful
-  "/api/v1/questions/delete_all/{id}":
+        '404':
+          description: not found
+  "/api/v1/questionnaires/toggle_access/{id}":
     parameters:
     - name: id
       in: path
-      description: id
       required: true
       schema:
-        type: string
-    delete:
-      summary: delete_all question
+        type: integer
+    get:
+      summary: toggle access
+      tags:
+      - Questionnaires
       responses:
         '200':
           description: successful
+        '404':
+          description: not found
+  "/api/v1/questionnaires/copy/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    post:
+      summary: copy questionnaire
+      tags:
+      - Questionnaires
+      responses:
+        '200':
+          description: successful
+        '404':
+          description: not found
   "/api/v1/questions":
     get:
       summary: list questions
@@ -185,37 +137,26 @@ paths:
           description: successful
     post:
       summary: create question
+      parameters: []
       responses:
-        '200':
-          description: successful
-  "/api/v1/questions/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: id
-      required: true
-      schema:
-        type: string
-    get:
-      summary: show question
-      responses:
-        '200':
-          description: successful
-    patch:
-      summary: update question
-      responses:
-        '200':
-          description: successful
-    put:
-      summary: update question
-      responses:
-        '200':
-          description: successful
-    delete:
-      summary: delete question
-      responses:
-        '200':
-          description: successful
+        '201':
+          description: created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weight:
+                  type: integer
+                questionnaire_id:
+                  type: integer
+                break_before:
+                  type: boolean
+                txt:
+                  type: string
+                question_type:
+                  type: string
   "/api/v1/roles":
     get:
       summary: list roles

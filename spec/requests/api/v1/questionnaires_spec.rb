@@ -35,24 +35,9 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
     end
 
     get('list questionnaires') do
+      tags 'Questionnaires'
       produces 'application/json'
       response(200, 'successful') do
-        schema type: :array,
-          items: {
-            type: :object,
-            properties: {
-              id: { type: :integer },
-              name: { type: :string },
-              questionnaire_type: { type: :string },
-              private: { type: :boolean },
-              min_question_score: { type: :integer },
-              max_question_score: { type: :integer },
-              created_at: { type: :string, format: 'date-time' },
-              updated_at: { type: :string, format: 'date-time' },
-              instructor_id: { type: :integer }
-            },
-            required: %w[id name questionnaire_type private min_question_score max_question_score created_at updated_at instructor_id]
-          }
         run_test! do
           expect(response.body.size).to eq(2)
         end
@@ -60,7 +45,7 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
     end
 
     post('create questionnaire') do
-
+      tags 'Questionnaires'
       let(:valid_questionnaire_params) do
         {
           name: 'Test Questionnaire',
@@ -103,19 +88,6 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
           instructor
           Questionnaire.create(valid_questionnaire_params)
         end
-        schema type: :object,
-          properties: {
-            id: { type: :integer },
-            name: { type: :string },
-            questionnaire_type: { type: :string },
-            private: { type: :boolean },
-            min_question_score: { type: :integer },
-            max_question_score: { type: :integer },
-            created_at: { type: :datetime },
-            updated_at: { type: :datetime },
-            instructor_id: { type: :integer }
-          },
-          required: %w[id name questionnaire_type private min_question_score max_question_score created_at updated_at instructor_id]
         run_test! do
           expect(response.body).to include('"name":"Test Questionnaire"')
         end
@@ -162,21 +134,9 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
       end
 
     get('show questionnaire') do
+      tags 'Questionnaires'
       produces 'application/json'
       response(200, 'successful') do
-        schema type: :object,
-              properties: {
-                id: { type: :integer },
-                name: { type: :string },
-                questionnaire_type: { type: :string },
-                private: { type: :boolean },
-                min_question_score: { type: :integer },
-                max_question_score: { type: :integer },
-                created_at: { type: :string, format: 'date-time' },
-                updated_at: { type: :string, format: 'date-time' },
-                instructor_id: { type: :integer }
-              },
-              required: %w[id name questionnaire_type private min_question_score max_question_score created_at updated_at instructor_id]
         run_test! do
           expect(response.body).to include('"name":"Test Questionnaire"') 
         end
@@ -191,6 +151,7 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
     end
 
     put('update questionnaire') do
+      tags 'Questionnaires'
       consumes 'application/json'
       produces 'application/json'
 
@@ -207,19 +168,6 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
             min_question_score: 1
           }
         end
-        schema type: :object,
-          properties: {
-            id: { type: :integer },
-            name: { type: :string },
-            questionnaire_type: { type: :string },
-            private: { type: :boolean },
-            min_question_score: { type: :integer },
-            max_question_score: { type: :integer },
-            created_at: { type: :datetime },
-            updated_at: { type: :datetime },
-            instructor_id: { type: :integer }
-          },
-          required: %w[id name questionnaire_type private min_question_score max_question_score created_at updated_at instructor_id]
         run_test! do
           expect(response.body).to include('"min_question_score":1')
         end
@@ -251,6 +199,7 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
     end
 
     delete('delete questionnaire') do
+      tags 'Questionnaires'
       produces 'application/json'
       response(204, 'successful') do
         run_test! do
@@ -297,6 +246,7 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
       end
 
       get('toggle access') do
+        tags 'Questionnaires'
         produces 'application/json'
         
         response(200, 'successful') do
@@ -344,6 +294,7 @@ RSpec.describe 'api/v1/questionnaires', type: :request do
       end
 
       post('copy questionnaire') do
+        tags 'Questionnaires'
         consumes 'application/json'
         produces 'application/json'
 

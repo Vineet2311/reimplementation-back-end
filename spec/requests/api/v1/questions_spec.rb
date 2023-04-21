@@ -61,7 +61,7 @@ RSpec.describe 'api/v1/questions', type: :request do
       
       let(:valid_question_params) do
         {
-          id: questionnaire.id,
+          questionnaire_id: questionnaire.id,
           txt: "test question", 
           question_type: "multiple_choice", 
           break_before: false,
