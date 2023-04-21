@@ -10,6 +10,8 @@ describe Questionnaire, type: :model do
   let(:question1) { questionnaire.questions.build(weight: 1, id: 1, seq: 1, txt: "que 1", question_type: "Scale", break_before: true) }
   let(:question2) { questionnaire.questions.build(weight: 10, id: 2, seq: 2, txt: "que 2", question_type: "Checkbox", break_before: true) }
   
+
+
   describe '#name' do
     # Test validates the name of the questionnaire
     it 'returns the name of the Questionnaire' do
