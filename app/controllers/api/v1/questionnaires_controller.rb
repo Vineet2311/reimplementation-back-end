@@ -26,9 +26,9 @@ class Api::V1::QuestionnairesController < ApplicationController
   # POST on /questionnaires
   # Instructor Id statically defined since implementation of Instructor model is out of scope of E2345.
   def create
-    if params[:name].blank?
-      render json: "Questionnaire name cannot be blank.", status: :unprocessable_entity and return
-    end
+    # if params[:name].blank?
+    #   render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
+    # end
     begin
       @questionnaire = Questionnaire.new(questionnaire_params)
       @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)

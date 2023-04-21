@@ -6,9 +6,4 @@ class Question < ApplicationRecord
     validates :question_type, presence: true # user must define type for a question
     validates :break_before, presence: true
   
-    
-    def delete
-      destroy
-    end
-  
   end
