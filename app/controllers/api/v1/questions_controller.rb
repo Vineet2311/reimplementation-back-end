@@ -99,6 +99,7 @@ class Api::V1::QuestionsController < ApplicationController
     begin
       @question = Question.find(params[:id])
       @question.update(question_params)
+      @question.save!
       render json: @question, status: :ok and return
     rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return

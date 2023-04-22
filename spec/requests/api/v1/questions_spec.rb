@@ -204,6 +204,7 @@ RSpec.describe 'api/v1/questions', type: :request do
     end
 
     put('update question') do
+      
       tags 'Questions'
       consumes 'application/json'
       produces 'application/json'
@@ -212,7 +213,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         type: :object,
         properties: {
           break_before: { type: :boolean },
-          question_type: { type: :string }
+          seq: { type: :integer }
         }
       }
       
@@ -239,23 +240,24 @@ RSpec.describe 'api/v1/questions', type: :request do
         end
       end
 
-      # response(422, 'unprocessable entity') do
-      #   let(:body_params) do
-      #     {
-      #       question_type: 54
-      #     }
-      #   end
-      #   schema type: :string
-      #   run_test! do
-      #     expect(response.body).to_not include('"question_type":54')
-      #   end
-      # end  
+      response(422, 'unprocessable entity') do
+        let(:body_params) do
+          {
+            seq: "Dfsd"
+          }
+        end
+        schema type: :string
+        run_test! do
+          expect(response.body).to_not include('"seq":"Dfsd"')
+        end
+      end  
 
 
     end
 
 
     delete('delete question') do
+
       tags 'Questions'
       produces 'application/json'
       
@@ -275,5 +277,79 @@ RSpec.describe 'api/v1/questions', type: :request do
 
   end
 
+  path '/api/v1/questions/delete_all/{id}' do
+    parameter name: 'id', in: :path, type: :integer
 
+    let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
+    
+    let(:instructor) do 
+      role
+      Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) 
+    end
+
+    let(:questionnaire) do
+      instructor
+      Questionnaire.create(
+        name: 'Questionnaire 1',
+        questionnaire_type: 'AuthorFeedbackReview',
+        private: true,
+        min_question_score: 0,
+        max_question_score: 10,
+        instructor_id: instructor.id
+      )
+    end
+
+    let(:question1) do
+      questionnaire
+      Question.create(
+        seq: 1, 
+        txt: "test question 1", 
+        question_type: "multiple_choice", 
+        break_before: true, 
+        weight: 5,
+        questionnaire_id: questionnaire.id
+      )
+    end
+
+    let(:question2) do
+      questionnaire
+      Question.create(
+        seq: 2, 
+        txt: "test question 2", 
+        question_type: "multiple_choice", 
+        break_before: false, 
+        weight: 10,
+        questionnaire_id: questionnaire.id
+      )
+    end
+
+    
+    let(:id) do
+      questionnaire
+      question1
+      question2
+      questionnaire.id 
+    end
+
+    delete('delete all questions') do
+      tags 'Questionnaires'
+      produces 'application/json'
+      response(204, 'successful') do
+        run_test! do
+          puts(response.body)
+          #expect(question1.exists?(id)).to eq(false)
+          #expect(Question.where(questionnaire_id: id)).to eq(0)
+        end
+      end
+
+      response(404, 'not found') do
+        let(:id) { 0 }
+        run_test! do
+          expect(response.body).to include("Couldn't find Questionnaire")
+        end
+      end
+    end
+
+
+  end
 end
