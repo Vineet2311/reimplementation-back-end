@@ -327,18 +327,16 @@ RSpec.describe 'api/v1/questions', type: :request do
     let(:id) do
       questionnaire
       question1
-      que
+      question2
       questionnaire.id 
     end
 
     delete('delete all questions') do
       tags 'Questionnaires'
       produces 'application/json'
-      response(204, 'successful') do
+      response(200, 'successful') do
         run_test! do
-          puts(response.body)
-          #expect(question1.exists?(id)).to eq(false)
-          #expect(Question.where(questionnaire_id: id)).to eq(0)
+          expect(Question.where(questionnaire_id: id).count).to eq(0)
         end
       end
 
@@ -349,7 +347,61 @@ RSpec.describe 'api/v1/questions', type: :request do
         end
       end
     end
+  end
 
+  path '/api/v1/questions/types' do
 
+    let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
+    
+    let(:instructor) do 
+      role
+      Instructor.create(name: 'testinstructor', email: 'test@test.com', fullname: 'Test Instructor', password: '123456', role: role) 
+    end
+
+    let(:questionnaire) do
+      instructor
+      Questionnaire.create(
+        name: 'Questionnaire 1',
+        questionnaire_type: 'AuthorFeedbackReview',
+        private: true,
+        min_question_score: 0,
+        max_question_score: 10,
+        instructor_id: instructor.id
+      )
+    end
+
+    let(:question1) do
+      questionnaire
+      Question.create(
+        seq: 1, 
+        txt: "test question 1", 
+        question_type: "multiple_choice", 
+        break_before: true, 
+        weight: 5,
+        questionnaire: questionnaire
+      )
+    end
+
+    let(:question2) do
+      questionnaire
+      Question.create(
+        seq: 2, 
+        txt: "test question 2", 
+        question_type: "multiple_choice", 
+        break_before: false, 
+        weight: 10,
+        questionnaire: questionnaire
+      )
+    end
+
+    get('question types') do
+      produces 'application/json'
+      response(200, 'successful') do
+        run_test! do
+          expect(response.body.size).to eq(2)
+        end
+      end
+    end
+  
   end
 end
