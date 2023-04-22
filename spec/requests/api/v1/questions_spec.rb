@@ -307,7 +307,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         question_type: "multiple_choice", 
         break_before: true, 
         weight: 5,
-        questionnaire_id: questionnaire.id
+        questionnaire: questionnaire
       )
     end
 
@@ -319,7 +319,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         question_type: "multiple_choice", 
         break_before: false, 
         weight: 10,
-        questionnaire_id: questionnaire.id
+        questionnaire: questionnaire
       )
     end
 
@@ -327,7 +327,7 @@ RSpec.describe 'api/v1/questions', type: :request do
     let(:id) do
       questionnaire
       question1
-      question2
+      que
       questionnaire.id 
     end
 
