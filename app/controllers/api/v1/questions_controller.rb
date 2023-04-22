@@ -52,6 +52,8 @@ class Api::V1::QuestionsController < ApplicationController
     
       question.save!
       render json: question, status: :created
+    rescue ActiveRecord::RecordNotFound
+      render json: $ERROR_INFO.to_s, status: :not_found and return  
     rescue ActiveRecord::RecordInvalid
       render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
@@ -115,7 +117,7 @@ class Api::V1::QuestionsController < ApplicationController
   
   # Only allow a list of trusted parameters through.
   def question_params
-    params.permit(:txt, :weight, :questionnaire_id, :seq, :question_type, :size,
+    params.permit(:txt, :weight, :seq, :questionnaire_id, :question_type, :size,
                                      :alternatives, :break_before, :max_label, :min_label)
   end
 end

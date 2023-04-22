@@ -9,9 +9,9 @@ class Question < ApplicationRecord
     
     def as_json(options = {})
         super(options.merge({
-                              only: %i[txt weight seq question_type size alternatives break_before min_label max_label created_at updated_at],
+                              only: %i[questionnaire_id txt weight seq question_type size alternatives break_before min_label max_label created_at updated_at],
                               include: {
-                                questionnaire: { only: %i[id name private min_question_score max_question_score instructor_id created_at updated_at questionnaire_type] }
+                                questionnaire: { only: %i[name private min_question_score max_question_score instructor_id created_at updated_at questionnaire_type] }
                               }
                             })).tap do |hash|
           hash['questionnaire'] ||= { id: nil, name: nil }
