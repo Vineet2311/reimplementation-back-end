@@ -3,12 +3,8 @@ class Api::V1::QuestionnairesController < ApplicationController
   # Index method returns the list of JSON objects of the questionnaire
   # GET on /questionnaires
   def index
-    begin
-      @questionnaires = Questionnaire.order(:id)
-      render json: @questionnaires, status: :ok and return
-    rescue
-      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
-    end
+    @questionnaires = Questionnaire.order(:id)
+    render json: @questionnaires, status: :ok and return
   end
   
   # Show method returns the JSON object of questionnaire with id = {:id}
@@ -17,7 +13,7 @@ class Api::V1::QuestionnairesController < ApplicationController
     begin
       @questionnaire = Questionnaire.find(params[:id])
       render json: @questionnaire, status: :ok and return
-    rescue
+    rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
     end
   end
@@ -26,16 +22,13 @@ class Api::V1::QuestionnairesController < ApplicationController
   # POST on /questionnaires
   # Instructor Id statically defined since implementation of Instructor model is out of scope of E2345.
   def create
-    if params[:name].blank?
-      render json: "Questionnaire name cannot be blank.", status: :unprocessable_entity and return
-    end
     begin
       @questionnaire = Questionnaire.new(questionnaire_params)
       @questionnaire.display_type = sanitize_display_type(@questionnaire.questionnaire_type)
       @questionnaire.save!
       render json: @questionnaire, status: :created and return
-    rescue StandardError
-      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
+    rescue ActiveRecord::RecordInvalid
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
@@ -45,8 +38,10 @@ class Api::V1::QuestionnairesController < ApplicationController
     begin
       @questionnaire = Questionnaire.find(params[:id])
       @questionnaire.delete
-    rescue
+    rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
+    rescue ActiveRecord::RecordInvalid
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
@@ -56,25 +51,27 @@ class Api::V1::QuestionnairesController < ApplicationController
     # Save questionnaire information
     begin
       @questionnaire = Questionnaire.find(params[:id])
-    rescue StandardError
-      render json: $ERROR_INFO.to_s, status: :not_found and return
-    end
-    begin
       @questionnaire.update(questionnaire_params)
       @questionnaire.save!
       render json: @questionnaire, status: :ok and return
-    rescue StandardError
-      render json: $ERROR_INFO.to_s, status: :unprocessable_entity and return
+    rescue ActiveRecord::RecordNotFound
+      render json: $ERROR_INFO.to_s, status: :not_found and return
+    rescue ActiveRecord::RecordInvalid
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
   # Copy method creates a copy of questionnaire with id - {:id} and return its JSON object
   # POST on /questionnaires/copy/:id
   def copy
-    @questionnaire = Questionnaire.copy_questionnaire_details(params)
-    render json: "Copy of the questionnaire has been created successfully.", status: :ok and return
-  rescue StandardError
-    render json: $ERROR_INFO.to_s, status: :not_found and return
+    begin
+      @questionnaire = Questionnaire.copy_questionnaire_details(params)
+      render json: "Copy of the questionnaire has been created successfully.", status: :ok and return
+    rescue ActiveRecord::RecordNotFound
+      render json: $ERROR_INFO.to_s, status: :not_found and return
+    rescue ActiveRecord::RecordInvalid
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
+    end
   end
 
   # Toggle access method toggles the private variable of the questionnaire with id - {:id} and return its JSON object
@@ -86,8 +83,10 @@ class Api::V1::QuestionnairesController < ApplicationController
       @questionnaire.save!
       @access = @questionnaire.private == true ? 'private' : 'public'
       render json: "The questionnaire \"#{@questionnaire.name}\" has been successfully made #{@access}. ", status: :ok and return
-    rescue StandardError
+    rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
+    rescue ActiveRecord::RecordInvalid
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
