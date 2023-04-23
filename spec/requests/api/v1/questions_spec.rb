@@ -1,8 +1,10 @@
 require 'swagger_helper'
 
+# Rspec tests for questions controller
 RSpec.describe 'api/v1/questions', type: :request do
 
   path '/api/v1/questions' do
+    # Creation of dummy objects for the test with the help of let statements
     let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
     
     let(:instructor) do 
@@ -46,6 +48,7 @@ RSpec.describe 'api/v1/questions', type: :request do
       )
     end
 
+    # get request on /api/v1/questions returns 200 succesful response when it returns list of questions present in the database
     get('list questions') do
       produces 'application/json'
       response(200, 'successful') do
@@ -68,7 +71,7 @@ RSpec.describe 'api/v1/questions', type: :request do
           weight: 10
         }
       end
-
+      # Creation of dummy objects for the test with the help of let statements
       let(:invalid_question_params1) do
         {
           questionnaire_id: nil ,
@@ -101,6 +104,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         required: %w[weight questionnaire_id break_before txt question_type]      
       }
 
+      # post request on /api/v1/questions returns 201 created response and creates a question with given valid parameters
       response(201, 'created') do
         let(:question) do
           questionnaire
@@ -111,6 +115,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         end
       end
 
+      # post request on /api/v1/questions returns 404 not foound when questionnaire id for the given question is not present in the database
       response(404, 'questionnaire id not found') do
         let(:question) do
           instructor
@@ -119,6 +124,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         run_test!
       end
 
+      # post request on /api/v1/questions returns 422 unprocessable entity when incorrect parameters are passed to create a question
       response(422, 'unprocessable entity') do
         let(:question) do
           instructor
@@ -134,6 +140,7 @@ RSpec.describe 'api/v1/questions', type: :request do
   path '/api/v1/questions/{id}' do
 
     parameter name: 'id', in: :path, type: :integer
+    # Creation of dummy objects for the test with the help of let statements
     let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
     
     let(:instructor) do 
@@ -189,12 +196,15 @@ RSpec.describe 'api/v1/questions', type: :request do
     get('show question') do
       tags 'Questions'
       produces 'application/json'
+
+      # get request on /api/v1/questions/{id} returns 200 succesful response and returns question with given question id
       response(200, 'successful') do
         run_test! do
           expect(response.body).to include('"txt":"test question 1"') 
         end
       end
 
+      # get request on /api/v1/questions/{id} returns 404 not found response when question id is not present in the database
       response(404, 'not_found') do
         let(:id) { 'invalid' }
           run_test! do
@@ -217,6 +227,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         }
       }
       
+      # put request on /api/v1/questions/{id} returns 200 succesful response and updates parameters of question with given question id
       response(200, 'successful') do
         let(:body_params) do
           {
@@ -228,6 +239,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         end
       end
 
+      # put request on /api/v1/questions/{id} returns 404 not found response when question with given id is not present in the database
       response(404, 'not found') do
         let(:id) { 0 }
         let(:body_params) do
@@ -240,6 +252,7 @@ RSpec.describe 'api/v1/questions', type: :request do
         end
       end
 
+      # put request on /api/v1/questions/{id} returns 422 unprocessable entity when incorrect parameters are passed for question with given question id 
       response(422, 'unprocessable entity') do
         let(:body_params) do
           {
@@ -260,13 +273,15 @@ RSpec.describe 'api/v1/questions', type: :request do
 
       tags 'Questions'
       produces 'application/json'
-      
+
+      # delete request on /api/v1/questions/{id} returns 200 succesful response when it deletes question with given question id present in the database
       response(200, 'successful') do
         run_test! do
           expect(Question.exists?(id)).to eq(false)
         end
       end
 
+      # delete request on /api/v1/questions/{id} returns 404 not found response when question with given question id is not present in the database
       response(404, 'not found') do
         let(:id) { 0 }
         run_test! do
@@ -280,6 +295,7 @@ RSpec.describe 'api/v1/questions', type: :request do
   path '/api/v1/questions/delete_all/{id}' do
     parameter name: 'id', in: :path, type: :integer
 
+    # Creation of dummy objects for the test with the help of let statements
     let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
     
     let(:instructor) do 
@@ -334,12 +350,15 @@ RSpec.describe 'api/v1/questions', type: :request do
     delete('delete all questions') do
       tags 'Questionnaires'
       produces 'application/json'
+
+      # delete method on /api/v1/questions/delete_all/{id} returns 200 succesful response when all questions with given questionnaire id are deleted
       response(200, 'successful') do
         run_test! do
           expect(Question.where(questionnaire_id: id).count).to eq(0)
         end
       end
 
+      # delete request on /api/v1/questions/delete_all/{id} returns 404 not found response when questionnaire id is not found in the database
       response(404, 'not found') do
         let(:id) { 0 }
         run_test! do
@@ -351,6 +370,7 @@ RSpec.describe 'api/v1/questions', type: :request do
 
   path '/api/v1/questions/types' do
 
+    # Creation of dummy objects for the test with the help of let statements
     let(:role) { Role.create(name: 'Instructor', parent_id: nil, default_page_id: nil) }
     
     let(:instructor) do 
@@ -396,6 +416,7 @@ RSpec.describe 'api/v1/questions', type: :request do
 
     get('question types') do
       produces 'application/json'
+      # get request on /api/v1/questions/types returns types of questions present in the database
       response(200, 'successful') do
         run_test! do
           expect(response.body.size).to eq(2)
