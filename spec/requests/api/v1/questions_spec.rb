@@ -50,6 +50,7 @@ RSpec.describe 'api/v1/questions', type: :request do
 
     # get request on /api/v1/questions returns 200 succesful response when it returns list of questions present in the database
     get('list questions') do
+      tags 'Questions'
       produces 'application/json'
       response(200, 'successful') do
         run_test! do
@@ -59,6 +60,7 @@ RSpec.describe 'api/v1/questions', type: :request do
     end
 
     post('create question') do
+      tags 'Questions'
       consumes 'application/json'
       produces 'application/json'
       
@@ -214,7 +216,6 @@ RSpec.describe 'api/v1/questions', type: :request do
     end
 
     put('update question') do
-      
       tags 'Questions'
       consumes 'application/json'
       produces 'application/json'
@@ -348,7 +349,7 @@ RSpec.describe 'api/v1/questions', type: :request do
     end
 
     delete('delete all questions') do
-      tags 'Questionnaires'
+      tags 'Questions'
       produces 'application/json'
 
       # delete method on /api/v1/questions/delete_all/{id} returns 200 succesful response when all questions with given questionnaire id are deleted
@@ -415,6 +416,7 @@ RSpec.describe 'api/v1/questions', type: :request do
     end
 
     get('question types') do
+      tags 'Questions'
       produces 'application/json'
       # get request on /api/v1/questions/types returns types of questions present in the database
       response(200, 'successful') do
