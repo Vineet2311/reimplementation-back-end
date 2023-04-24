@@ -88,7 +88,7 @@ class Api::V1::QuestionsController < ApplicationController
     rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
     rescue ActiveRecord::RecordInvalid
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
@@ -103,7 +103,7 @@ class Api::V1::QuestionsController < ApplicationController
     rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
     rescue ActiveRecord::RecordInvalid
-      render json: $ERROR_INFO, status: :unprocessable_entity
+      render json: $ERROR_INFO.to_s, status: :unprocessable_entity
     end
   end
 
