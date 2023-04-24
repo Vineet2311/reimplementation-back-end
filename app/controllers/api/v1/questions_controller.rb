@@ -63,9 +63,8 @@ class Api::V1::QuestionsController < ApplicationController
   # DELETE on /questions/:id
   def destroy
     begin
-      question = Question.find(params[:id])
-      question.destroy
-      render json: 'You have successfully deleted the question!', status: :ok and return
+      @question = Question.find(params[:id])
+      @question.destroy
     rescue ActiveRecord::RecordNotFound
       render json: $ERROR_INFO.to_s, status: :not_found and return
     rescue ActiveRecord::RecordInvalid
