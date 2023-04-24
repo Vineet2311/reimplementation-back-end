@@ -30,7 +30,6 @@ class Api::V1::QuestionsController < ApplicationController
         seq: num_of_existed_questions + 1,
         question_type: params[:question_type],
         break_before: true)
-      # question = Object.const_get(params[:question][:type]).create(txt: '', questionnaire_id: questionnaire_id, seq: num_of_existed_questions + 1, question_type: params[:question][:type], break_before: true)
       case question.question_type
         when 'Scale'
           question.weight = params[:weight]
